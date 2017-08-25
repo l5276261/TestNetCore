@@ -1,0 +1,29 @@
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.deps.json
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.dll
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.pdb
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csprojResolveAssemblyReference.cache
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csproj.CoreCompileInputs.cache
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfoInputs.cache
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfo.cs
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.dll
+D:\我的文档\Visual Studio 2017\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.deps.json
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csprojResolveAssemblyReference.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csproj.CoreCompileInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfoInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfo.cs
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\protobuf-net.dll
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.deps.json
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.dll
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\Protocol.pdb
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\bin\Debug\netcoreapp2.0\protobuf-net.dll
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csprojResolveAssemblyReference.cache
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.csproj.CoreCompileInputs.cache
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfoInputs.cache
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.AssemblyInfo.cs
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.dll
+D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\Protocol\obj\Debug\netcoreapp2.0\Protocol.pdb

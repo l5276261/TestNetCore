@@ -1,0 +1,47 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.0",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.0": {
+      "NetFrame/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.0.0",
+          "protobuf-net": "2.0.0.668"
+        },
+        "runtime": {
+          "NetFrame.dll": {}
+        }
+      },
+      "Newtonsoft.Json/10.0.0.0": {
+        "runtime": {
+          "Newtonsoft.Json.dll": {}
+        }
+      },
+      "protobuf-net/2.0.0.668": {
+        "runtime": {
+          "protobuf-net.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NetFrame/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Newtonsoft.Json/10.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "protobuf-net/2.0.0.668": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
