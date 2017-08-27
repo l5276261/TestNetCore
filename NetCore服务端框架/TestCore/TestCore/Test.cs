@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using TestCore.LOLServer;
 using TestCore.Model;
 using TestCore.Tool;
@@ -110,6 +111,30 @@ namespace TestCore{
             SerializeUtil.IsPBOrJson = false;
             UserToken.IsUdp = true;
             Console.WriteLine("UDP服务器启动成功");
+            while (true) {
+
+            }
+        }
+        public static void NetFrameKcpStart() {
+            //服务器初始化
+            KcpServer ss = new KcpServer(3);
+            ss.Encode = MessageEncoding.Encode;
+            ss.Decode = MessageEncoding.Decode;
+            ss.Center = new HandlerCenter();
+            ss.LD = LengthEncoding.Decode;
+            ss.LE = LengthEncoding.Encode;
+            ss.Start(6666);
+            SerializeUtil.IsPBOrJson = false;
+            //UserToken.IsUdp = true;
+            Console.WriteLine("KCP服务器启动成功");
+            Thread t = new Thread(delegate () {
+                while (true) {
+                    if (TokenManager.TokenDic.ContainsKey(1))
+                        TokenManager.TokenDic[1].Update();
+                    Thread.Sleep(10);
+                }
+            });
+            t.Start();
             while (true) {
 
             }

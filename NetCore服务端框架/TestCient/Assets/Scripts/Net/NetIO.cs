@@ -20,6 +20,7 @@ public class NetIO : InstanceNormal<NetIO> {
         SerializeUtil.IsPBOrJson = false;
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }
+    /// <summary>连接服务器同步或者异步+阻塞方式都会卡线程，尤其是网络不好的情况下，这个适合第一次重新连接服务器的情景</summary>
     public void ConnectServer() {
         try {
             if (HasNet()) {
@@ -132,19 +133,22 @@ public class NetIO : InstanceNormal<NetIO> {
         #endregion
         return LengthEncoding.Encode(MessageEncoding.Encode(model));
     }
-    /// <summary>发送消息给服务端 </summary>
+    /// <summary>发送消息给服务端，TCP同步发送或者异步+阻塞发送都会卡线程，尤其是网络不好的情况下，
+    /// 这个根据需要是不是允许玩家网络卡的时候游戏继续运行，来决定不卡或者卡线程，默认设置为异步非阻塞发送
+    /// </summary>
     private void Send(byte[] data) {
         try {
             if (!isConnect||data==null) return;
             //socket.Send(arr1.getBuff());
-            IAsyncResult send = socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
+            socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
+            //IAsyncResult send = socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
             //阻塞直到连接收到成功或者失败信号或者500毫秒后继续执行后面的
-            bool success = send.AsyncWaitHandle.WaitOne(500, true);
-            if (!success) {
-                Debug.Log("send error close socket");
-                Close();
-                return;
-            }
+            //bool success = send.AsyncWaitHandle.WaitOne(500, true);
+            //if (!success) {
+            //    Debug.Log("send error close socket");
+            //    Close();
+            //    return;
+            //}
 
         } catch (Exception e) {
             //如果异常错误比如服务端断掉，那么就不会执行发送的回调的。           

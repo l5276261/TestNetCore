@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum NetType { TCP,UDP,KCP}
 public static class Ex {
-    public static bool IsUdp;
+    public static NetType Type;
     /// <summary>
     /// 扩展monobehaviour 发送消息方法
     /// </summary>
@@ -13,20 +14,52 @@ public static class Ex {
     /// <param name="command"></param>
     /// <param name="message"></param>
     public static void WriteMessage(this MonoBehaviour mono, byte type, int area, int command, object message) {
-        if (!IsUdp)
-            NetIO.I.Write(type, area, command, message);
-        else Udp.I.Write(type, area, command, message);
+        switch (Type) {
+            case NetType.TCP:
+                NetIO.I.Write(type, area, command, message);
+                break;
+            case NetType.UDP:
+                Udp.I.Write(type, area, command, message);
+                break;
+            case NetType.KCP:
+                KCPSocket.I.Write(type, area, command, message);
+                break;
+        }
     }
     public static void Close(this MonoBehaviour mono) {
-        if (!IsUdp) NetIO.I.Close();
-        else Udp.I.Close();
+        switch (Type) {
+            case NetType.TCP:
+                NetIO.I.Close();
+                break;
+            case NetType.UDP:
+                Udp.I.Close();
+                break;
+            case NetType.KCP:
+                KCPSocket.I.Close();
+                break;
+        }
     }
     public static void Initial(this MonoBehaviour mono) {
-        if (!IsUdp) NetIO.I.ConnectServer();
-        else Udp.I.Initial();
+        switch (Type) {
+            case NetType.TCP:
+                NetIO.I.ConnectServer();
+                break;
+            case NetType.UDP:
+                    Udp.I.Initial();
+                    break;
+            case NetType.KCP:
+                KCPSocket.I.Initial();
+                break;
+        }
     }
     public static List<SocketModel> Messages(this MonoBehaviour mono) {
-        if (!IsUdp) return NetIO.I.messages;
-        else return Udp.I.messages;
+        if (Type == NetType.TCP) {
+            return NetIO.I.messages;
+        } else if (Type == NetType.UDP) {
+            return Udp.I.messages;
+        } else if (Type == NetType.KCP) {
+            return KCPSocket.I.messages;
+        }
+        return null;
     }
 }

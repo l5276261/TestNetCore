@@ -13,7 +13,7 @@ public class NetMessageUtil :InstanceMono<NetMessageUtil> {
     //IHandler fight;
     // Use this for initialization
     void Awake() {
-        Ex.IsUdp = false;
+        Ex.Type = NetType.KCP;
         this.Initial();
     }
     void Start() {
@@ -27,6 +27,8 @@ public class NetMessageUtil :InstanceMono<NetMessageUtil> {
     }
 
     void Update() {
+        if (Ex.Type == NetType.KCP)
+            KCPSocket.I.Update();
         while(this.Messages().Count > 0) {
             SocketModel model = this.Messages()[0];
             StartCoroutine("MessageReceive", model);
