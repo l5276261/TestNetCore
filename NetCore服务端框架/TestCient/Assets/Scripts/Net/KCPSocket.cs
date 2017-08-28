@@ -112,9 +112,9 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     }
     /// <summary>底层UDP发送供KCP调用 </summary>
     private void UdpSend(byte[] data, int size) {
-        Debug.Log("udpsend");
         try {
             if (data == null) return;
+            Debug.Log("udpsend");
             socket.SendTo(data, 0, size, SocketFlags.None, server);
             #region 异步发送
             //IAsyncResult send = socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, server, new AsyncCallback(SendCallBack), server);
@@ -152,7 +152,6 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
 
         while (!mRecvQueue.Empty()) {
             var buf = mRecvQueue.Pop();
-
             int ret = mKcp.Input(buf);
             //收到的不是一个正确的KCP包
             if (ret < 0) {

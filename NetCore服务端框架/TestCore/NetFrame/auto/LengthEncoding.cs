@@ -41,5 +41,15 @@ namespace NetFrame.auto
             ms.Close();
             return result;
         }
+        /// <summary>解析KCP数据包得到发送来的是那个conv连接ID的KCP对象的 </summary>
+        public static UInt32 DecodeKCP_ID(byte[] data) {
+            if (data.Length < 4) return 0;
+            MemoryStream ms = new MemoryStream(data);//创建内存流对象，并将缓存数据写入进去
+            BinaryReader br = new BinaryReader(ms);//二进制读取流
+            UInt32 conv = br.ReadUInt32();//从缓存中读取UInt32型KCP连接ID
+            br.Close();
+            ms.Close();
+            return conv;
+        }
     }
 }

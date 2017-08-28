@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetFrame.auto;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
@@ -169,8 +170,10 @@ namespace NetFrame
         }
         /// <summary>网络消息到达 </summary>
         public void KcpReceive(byte[] buff) {
+            //KCP分发：读取KCP消息头确定conv这个连接ID，好分配相同conv的KCP对象去处理这个消息
+            UInt32 conv = LengthEncoding.DecodeKCP_ID(buff);
             mRecvQueue.Push(buff);
-            //测试调用位置更改
+            //测试调用位置更改，貌似没区别，不用强制接收和发送在一个方法执行。
             //process_recv_queue();
         }
         /// <summary>

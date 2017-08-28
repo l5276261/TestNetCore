@@ -131,7 +131,7 @@ namespace TestCore{
                 while (true) {
                     if (TokenManager.TokenDic.ContainsKey(1))
                         TokenManager.TokenDic[1].Update();
-                    Thread.Sleep(100);
+                    Thread.Sleep(5);
                 }
             });
             t.Start();
