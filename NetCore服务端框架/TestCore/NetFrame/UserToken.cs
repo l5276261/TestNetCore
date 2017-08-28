@@ -18,7 +18,7 @@ namespace NetFrame
         public LengthDecode LD;
         public BodyEncode Encode;
         public BodyDecode Decode;
-        public static bool IsUdp;
+        public static NetType Type;
 
         public delegate void SendProcessDelegate(SocketAsyncEventArgs e);
         public SendProcessDelegate SendProcess;
@@ -83,6 +83,10 @@ namespace NetFrame
                 CloseProcess(this, "调用已经断开的连接");
                 return;
             }
+            if (Type == NetType.KCP) {
+                Send(value);
+                return;
+            }
             WriteQueue.Enqueue(value);
             if (!isWriting) {
                 isWriting = true;
@@ -99,13 +103,13 @@ namespace NetFrame
             //设置消息发送异步对象的发送数据缓冲区数据
             SendSAEA.SetBuffer(buff, 0, buff.Length);
             //开启异步发送，UDP和TCP的发送API不同
-            if (!IsUdp) {
+            if (Type==NetType.TCP) {
                 bool result = conn.SendAsync(SendSAEA);
                 //是否挂起
                 if (!result) {
                     SendProcess(SendSAEA);
                 }
-            } else {
+            } else if(Type==NetType.UDP) {
                 bool result = conn.SendToAsync(SendSAEA);
                 //是否挂起
                 if (!result) {
@@ -123,7 +127,7 @@ namespace NetFrame
                 cache.Clear();
                 isReading = false;
                 isWriting = false;
-                if (!IsUdp) {
+                if (Type==NetType.TCP) {
                     conn.Shutdown(SocketShutdown.Both);
                     conn.Close();
                 }
@@ -166,6 +170,8 @@ namespace NetFrame
         /// <summary>网络消息到达 </summary>
         public void KcpReceive(byte[] buff) {
             mRecvQueue.Push(buff);
+            //测试调用位置更改
+            //process_recv_queue();
         }
         /// <summary>
         /// 用于在KCP对接收到并处理后的完整数据包的基本的反序列化，不包含消息体的反序列化，
@@ -175,7 +181,7 @@ namespace NetFrame
             //解码消息存储对象
             byte[] result = null;
             List<byte> cache1 = new List<byte>();
-            cache.AddRange(data);
+            cache1.AddRange(data);
             if (LD != null) {
                 //长度解码
                 result = LD(ref cache1);
@@ -203,7 +209,7 @@ namespace NetFrame
         private void UdpSend(byte[] data, int size) {
             if (data == null) return;
             //设置消息发送异步对象的发送数据缓冲区数据
-            SendSAEA.SetBuffer(data, 0, data.Length);
+            SendSAEA.SetBuffer(data, 0, size);
             //开启异步发送
             bool result = conn.SendToAsync(SendSAEA);
             //是否挂起

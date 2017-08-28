@@ -93,7 +93,7 @@ namespace TestCore{
             ss.LE = LengthEncoding.Encode;
             ss.Start(6666);
             SerializeUtil.IsPBOrJson = false;
-            UserToken.IsUdp = false;
+            UserToken.Type = NetType.TCP;
             Console.WriteLine("TCP服务器启动成功");
             while (true) {
 
@@ -109,7 +109,7 @@ namespace TestCore{
             ss.LE = LengthEncoding.Encode;
             ss.Start(6666);
             SerializeUtil.IsPBOrJson = false;
-            UserToken.IsUdp = true;
+            UserToken.Type = NetType.UDP;
             Console.WriteLine("UDP服务器启动成功");
             while (true) {
 
@@ -125,13 +125,13 @@ namespace TestCore{
             ss.LE = LengthEncoding.Encode;
             ss.Start(6666);
             SerializeUtil.IsPBOrJson = false;
-            //UserToken.IsUdp = true;
+            UserToken.Type = NetType.KCP;
             Console.WriteLine("KCP服务器启动成功");
             Thread t = new Thread(delegate () {
                 while (true) {
                     if (TokenManager.TokenDic.ContainsKey(1))
                         TokenManager.TokenDic[1].Update();
-                    Thread.Sleep(10);
+                    Thread.Sleep(100);
                 }
             });
             t.Start();
