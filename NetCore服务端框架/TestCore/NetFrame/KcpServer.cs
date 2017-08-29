@@ -55,8 +55,8 @@ namespace NetFrame
             receiveSocketArgs.SetBuffer(new byte[1024], 0, 1024);
             #region KCP测试用
             kcpToken = pool.Pop();
-            kcpToken.init_kcp(1);kcpToken.Run();
-            TokenManager.TokenDic.Add(1, kcpToken);
+            //kcpToken.init_kcp(1);kcpToken.Run();
+            //TokenManager.TokenDic.Add(1, kcpToken);
             #endregion
             //监听当前服务器网卡所有可用IP地址的port端口
             //外网IP 内网IP192.168.x.x 本机IP一个127.0.0.1

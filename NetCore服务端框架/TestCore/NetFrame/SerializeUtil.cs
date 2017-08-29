@@ -74,6 +74,14 @@ namespace NetFrame
         public static string BytesToString(byte[] bytes) {
             return Encoding.Default.GetString(bytes);
         }
+        /// <summary>int转字节数组 </summary>
+        public static byte[] UintToBytes(UInt32 i) {
+            return BitConverter.GetBytes(i);
+        }
+        /// <summary>字节数组转int </summary>
+        public static UInt32 BytesToUint(byte[] bytes, int index) {
+            return BitConverter.ToUInt32(bytes, index);
+        }
         /// <summary>JSON序列化操作 </summary>
         public static string JsonSer(object value) {
             return JsonConvert.SerializeObject(value);

@@ -171,8 +171,16 @@ namespace NetFrame
         /// <summary>网络消息到达 </summary>
         public void KcpReceive(byte[] buff) {
             //KCP分发：读取KCP消息头确定conv这个连接ID，好分配相同conv的KCP对象去处理这个消息
-            UInt32 conv = LengthEncoding.DecodeKCP_ID(buff);
-            mRecvQueue.Push(buff);
+            UInt32 conv = LengthEncoding.DecodeUInt(buff,0);
+            //0代表是第一次连接服务端，还没有分配KCP
+            if (conv == 0) {
+                //开启KCP
+                init_kcp(1); Run();
+                TokenManager.TokenDic.Add(1, this);
+                //通知客户端KCP的conv编号
+                UdpSend(SerializeUtil.UintToBytes(1),4);
+            } else
+                mRecvQueue.Push(buff);
             //测试调用位置更改，貌似没区别，不用强制接收和发送在一个方法执行。
             //process_recv_queue();
         }

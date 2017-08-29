@@ -80,6 +80,16 @@ namespace TestCore{
         public static void Config() {
             Methods.Config();
         }
+        public static void Int_Bytes(int num) {
+            byte[] b = new byte[4];
+            LengthEncoding.EncodeInt(b,0,num);
+            Console.WriteLine("num " + num + " 的二进制格式为 " + Convert.ToString(num, 2));
+            for (int i = 0; i < 4; i++) {
+                Console.WriteLine("b[i] " + b[i] + " 的二进制格式为 " + Convert.ToString(b[i], 2));
+            }
+            num = LengthEncoding.DecodeInt(b,0);
+            Console.WriteLine("通过二进制把byte数组再转换成int " + num + " 对应的二进制为 " + Convert.ToString(num, 2));
+        }
         public static void Mysql() {
             //Methods.MysqlFind();
         }

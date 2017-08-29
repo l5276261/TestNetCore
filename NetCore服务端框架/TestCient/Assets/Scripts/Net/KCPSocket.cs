@@ -16,6 +16,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";
     private int port = 6666;
     private bool isRun = false;
+    private bool isConnect = false;
     private EndPoint server;
     private EndPoint receiveServer;
     private byte[] readBuff = new byte[1024];
@@ -33,8 +34,9 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         server = new IPEndPoint(IPAddress.Parse(ip), port);
         receiveServer = new IPEndPoint(IPAddress.Parse(ip), port);
+        //直接初始化一个conv的KCP，实际应该是由服务端分配。
         //init_kcp((UInt32)new System.Random((int)DateTime.Now.Ticks).Next(1, Int32.MaxValue));
-        init_kcp(1);
+        //init_kcp(1);
         try {
             //开启异步数据接收
             socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
@@ -42,6 +44,8 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         } catch (Exception e) {
             Debug.Log(e.Message);
         }
+        //连接服务端
+        ConnectServer();
     }
 
     void init_kcp(UInt32 conv) {
@@ -60,8 +64,12 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
             if (length>0) {
                 byte[] message = new byte[length];
                 Buffer.BlockCopy(readBuff, 0, message, 0, length);
-                // push udp packet to switch queue.
-                mRecvQueue.Push(message);
+                if (!isConnect) {
+                    UInt32 conv = SerializeUtil.BytesToUint(message,0);
+                    init_kcp(conv);isConnect = true;
+                } else
+                    // push udp packet to switch queue.
+                    mRecvQueue.Push(message);
             }
             //尾递归 再次开启异步消息接收 消息到达后会直接写入 缓冲区 readbuff
             socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
@@ -69,6 +77,10 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
             Debug.Log("远程服务器主动断开连接 " + e.Message);
             Close();
         }
+    }
+    /// <summary>连接服务端，并获取服务端分配的KCP的conv编号 </summary>
+    private void ConnectServer() {
+        UdpSend(SerializeUtil.UintToBytes(0), 4);
     }
     /// <summary>
     /// 用于在KCP对接收到并处理后的完整数据包的基本的反序列化，不包含消息体的反序列化，
@@ -142,7 +154,8 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
 
     public void Close() {
         if (!isRun) return;
-        isRun = false;        
+        isRun = false;
+        isConnect = false;
         socket.Shutdown(SocketShutdown.Both);
         socket.Close();
     }
@@ -172,6 +185,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     }
     /// <summary>更新中检查时钟然后决定发送与否，先执行接收数据的处理 </summary>
     void update(UInt32 current) {
+        if (!isConnect) return;
         process_recv_queue();
 
         if (mNeedUpdateFlag || current >= mNextUpdateTime) {
