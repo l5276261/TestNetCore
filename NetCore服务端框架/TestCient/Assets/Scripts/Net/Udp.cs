@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Udp :InstanceNormal<Udp> {
     private Socket socket;
-    private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";
+    private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";//"116.62.233.121";
     private int port = 6666;
     private bool isConnect = false;//UDP里面没有状态连接这个只是作为socket可否释放的一个判断
     private EndPoint server;
@@ -41,7 +41,7 @@ public class Udp :InstanceNormal<Udp> {
                 isReading = true;
                 OnData();
             }
-            Debug.Log("消息数量 " + messages.Count);
+            //Debug.Log("消息数量 " + messages.Count);
             //尾递归 再次开启异步消息接收 消息到达后会直接写入 缓冲区 readbuff
             socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
         } catch (Exception e) {
@@ -68,12 +68,14 @@ public class Udp :InstanceNormal<Udp> {
         }
         //进行消息的处理
         messages.Add(message);
+        Debug.Log(DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         //尾递归 防止在消息处理过程中 有其他消息到达而没有经过处理
         OnData();
     }
     //序列化数据并且转换成发送的消息，然后发送
     public void Write(byte type, int area, int command, object message) {
-        Debug.Log("Write " + isConnect);
+        //Debug.Log("Write " + isConnect);
+        Debug.Log(DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         //if (!isConnect) ConnectServer();
         //发送消息
         Send(Encode(type, area, command, message));
@@ -105,7 +107,7 @@ public class Udp :InstanceNormal<Udp> {
     /// 然后接收到正确的操作命令后进行差值运算平滑补偿，减少卡顿的不舒服。
     /// </summary>
     private void Send(byte[] data) {
-        Debug.Log("UDP Send");
+        //Debug.Log("UDP Send");
         try {
             if (data == null) return;
             socket.SendTo(data,server);

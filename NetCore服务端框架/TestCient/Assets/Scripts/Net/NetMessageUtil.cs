@@ -1,4 +1,5 @@
 ﻿using GameProtocol;
+using GameProtocol.dto;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +40,13 @@ public class NetMessageUtil :InstanceMono<NetMessageUtil> {
     void MessageReceive(SocketModel model) {
         switch (model.Type) {
             case Protocol.TYPE_LOGIN:
-                login.MessageReceive(model);
+                List<AccountInfoDTO> accounts = SerializeUtil.DesDecode<List<AccountInfoDTO>>(model.Message as byte[]);
+                string str = "";
+                for (int i = 0; i < accounts.Count; i++) {
+                    str += " " + accounts[i].account;
+                }
+                Debug.Log(str);
+                //login.MessageReceive(model);
                 break;
             //case Protocol.TYPE_USER:
             //    user.MessageReceive(model);

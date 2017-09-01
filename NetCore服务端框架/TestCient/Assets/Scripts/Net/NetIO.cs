@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class NetIO : InstanceNormal<NetIO> {
     private Socket socket;
-    private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";
+    private string ip = "116.62.233.121";//"192.168.2.3";//"127.0.0.1";//"192.168.2.146";//"116.62.233.121";
     private int port = 6666;
     private bool isConnect = false;
     private byte[] readBuff = new byte[1024];
@@ -98,12 +98,14 @@ public class NetIO : InstanceNormal<NetIO> {
         }
         //进行消息的处理
         messages.Add(message);
+        Debug.Log(DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         //尾递归 防止在消息处理过程中 有其他消息到达而没有经过处理
         OnData();
     }
     //序列化数据并且转换成发送的消息，然后发送
     public void Write(byte type, int area, int command, object message) {
-        Debug.Log("Write " + isConnect);
+        //Debug.Log("Write " + isConnect);
+        Debug.Log(DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         if (!isConnect) ConnectServer();
         //发送消息
         Send(Encode(type, area, command, message));

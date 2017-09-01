@@ -11,7 +11,7 @@ namespace NetFrame
     {
         Socket server;//服务器socket监听对象
         private SocketAsyncEventArgs receiveSocketArgs;//接收用socket异步事件
-        private Socket sendSocket;//用于发送的socket
+        private Socket sendSocket;//用于发送的socket，阿里云winserver只能用一个socket收发UDP，不然客户端是收不到数据的
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
         UserTokenPool pool;
@@ -81,13 +81,14 @@ namespace NetFrame
                     ProcessSend(e);
                 }
             } catch (Exception E) {
-                Console.WriteLine("IO_Completed {0} error, message: {1}", e.ConnectSocket.LocalEndPoint, E.Message);
+                Console.WriteLine("IO_Completed {0} error, message: {1}", E.Message);
             }
         }
         public void ProcessReceive(SocketAsyncEventArgs e) {
-            UserToken token = pool.Pop();token.conn = sendSocket;token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
+            UserToken token = pool.Pop();token.conn = server;token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
             //判断网络消息接收是否成功
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success) {
+                Console.WriteLine("接收到时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
                 byte[] message = new byte[e.BytesTransferred];
                 Buffer.BlockCopy(e.Buffer, 0, message, 0, e.BytesTransferred);
                 //处理接收到的消息
@@ -123,7 +124,7 @@ namespace NetFrame
         /// <param name="error">断开连接的错误编码</param>
         public void ClientClose(UserToken token, string error) {
             if (token.conn!= null) {
-                //防止关闭释放的时候，出现多线程的访问，也是避免同一个userToken同时有多个线程操作
+                //防止关闭释放的时候，出现多线程的访问，也是避免同一个userToken同时有多个线程操作，比如发送的时候失败在关闭，结果收到了消息
                 lock (token) {
                     //通知应用层面，客户端断开连接了
                     Center.ClientClose(token, error);

@@ -101,13 +101,14 @@ namespace NetFrame
             try {
                 //避免同一个userToken同时有多个线程操作，使该用户对象逻辑处理都是串行的，
                 //当然也可以有其他方式比如数据进入队列然后串行操作，暂时先这样，业务逻辑设计的时候再改造  
-                lock (token) {
+                //不用加锁，消息执行对于自己来说是串行的
+                //lock (token) {
                     if (e.LastOperation == SocketAsyncOperation.Receive) {
                         ProcessReceive(e);
                     } else {
                         ProcessSend(e);
                     }
-                }
+                //}
             } catch (Exception E) {
                Console.WriteLine("IO_Completed {0} error, message: {1}", token.conn.LocalEndPoint, E.Message);
             }
@@ -116,6 +117,7 @@ namespace NetFrame
             UserToken token = e.UserToken as UserToken;
             //判断网络消息接收是否成功
             if (token.ReceiveSAEA.BytesTransferred > 0 && token.ReceiveSAEA.SocketError == SocketError.Success) {
+                Console.WriteLine("接收到时间 "+DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
                 byte[] message = new byte[token.ReceiveSAEA.BytesTransferred];
                 Buffer.BlockCopy(token.ReceiveSAEA.Buffer, 0, message, 0, token.ReceiveSAEA.BytesTransferred);
                 //处理接收到的消息
@@ -146,7 +148,7 @@ namespace NetFrame
         /// <param name="error">断开连接的错误编码</param>
         public void ClientClose(UserToken token,string error) {
             if (token.conn != null) {
-                //防止关闭释放的时候，出现多线程的访问，也是避免同一个userToken同时有多个线程操作
+                //防止关闭释放的时候，出现多线程的访问，也是避免同一个userToken同时有多个线程操作，比如发送的时候失败在关闭，结果收到了消息
                 lock (token) {
                     //通知应用层面，客户端断开连接了
                     Center.ClientClose(token, error);

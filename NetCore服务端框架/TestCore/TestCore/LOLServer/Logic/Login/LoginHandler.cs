@@ -21,15 +21,23 @@ namespace TestCore.LOLServer.Logic.Login
         }
 
         public void MessageReceive(UserToken token, SocketModel message) {
-            message.Message = SerializeUtil.DesDecode<AccountInfoDTO>(message.Message as byte[]);
-            switch (message.Command) {
-                case LoginProtocol.LOGIN_CREQ:
-                    login(token, message.GetMessage<AccountInfoDTO>());
-                    break;
-                case LoginProtocol.REG_CREQ:
-                    reg(token, message.GetMessage<AccountInfoDTO>());
-                    break;
+            List<AccountInfoDTO> accounts = SerializeUtil.DesDecode<List<AccountInfoDTO>>(message.Message as byte[]);
+            string str = "";
+            for (int i = 0; i < accounts.Count; i++) {
+                str += " " + accounts[i].account;
             }
+            Console.WriteLine(str);
+            //Console.WriteLine("信息输出完成");
+            write(token, LoginProtocol.LOGIN_SRES, SerializeUtil.SerEncode(accounts));
+            //message.Message = SerializeUtil.DesDecode<AccountInfoDTO>(message.Message as byte[]);
+            //switch (message.Command) {
+            //    case LoginProtocol.LOGIN_CREQ:
+            //        login(token, message.GetMessage<AccountInfoDTO>());
+            //        break;
+            //    case LoginProtocol.REG_CREQ:
+            //        reg(token, message.GetMessage<AccountInfoDTO>());
+            //        break;
+            //}
         }
         public void login(UserToken token, AccountInfoDTO value) {
             ExecutorPool.Instance.execute(

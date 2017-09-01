@@ -913,4 +913,8 @@ public class KCP
     {
         return snd_buf.Length + snd_queue.Length;
     }
+    public void FastSet() {
+        rx_minrto = 10;
+        fastresend = 1;
+    }
 }

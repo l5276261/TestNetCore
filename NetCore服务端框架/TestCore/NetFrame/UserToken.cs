@@ -103,6 +103,7 @@ namespace NetFrame
             byte[] buff = WriteQueue.Dequeue();
             //设置消息发送异步对象的发送数据缓冲区数据
             SendSAEA.SetBuffer(buff, 0, buff.Length);
+            Console.WriteLine("发送时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
             //开启异步发送，UDP和TCP的发送API不同
             if (Type==NetType.TCP) {
                 bool result = conn.SendAsync(SendSAEA);
@@ -164,6 +165,9 @@ namespace NetFrame
             //快速模式
             kcp.NoDelay(1, 10, 2, 1);
             kcp.WndSize(128, 128);
+            //Internet上的标准MTU值为576，所以Internet的UDP编程时数据长度最好在576－20－8＝548字节以内，已经由KCP自行处理了。
+            kcp.SetMtu(548);
+            kcp.FastSet();
         }
         public void Run() {
             isRun = true; evHandler = AfterKCPDecode;
@@ -201,6 +205,7 @@ namespace NetFrame
                     return;
                 }
             }
+            //Console.WriteLine("解析消息时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
             object message = Decode(result);
             if (message == null) {
                 return;
@@ -212,6 +217,7 @@ namespace NetFrame
         public void Send(byte[] buf) {
             kcp.Send(buf);
             mNeedUpdateFlag = true;
+            //Console.WriteLine("放进消息队列时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         }
         public void Send(string str) {
             Send(System.Text.ASCIIEncoding.ASCII.GetBytes(str));
@@ -219,14 +225,32 @@ namespace NetFrame
         /// <summary>底层UDP发送供KCP调用 </summary>
         private void UdpSend(byte[] data, int size) {
             if (data == null) return;
-            //设置消息发送异步对象的发送数据缓冲区数据
-            SendSAEA.SetBuffer(data, 0, size);
+            //不能用UDP直接发送一个大于SAEA接收buffer的数据包，
+            //因为UDP接收到的数据跟TCP不一样，TCP会超过buffer大小会自动根据这个大小一个一个的发过来，UDP不会，他会直接把你指定大小的发过去，即不会替你分包的。
+            //TCP会，KCP算法也会，会多次发送他分开的包，然后整合成一个完整的包，他其实是另一版本的TCP。
+            //网络数据的单个包（TCP会自动根据MTU分成多个数据包，UDP就是一次发送的数据的大小，只能自己分包或者类似KCP算法分包），也就是相当于有MTU的限制和不同环境的MTU，
+            //最好是设置Internet上的标准MTU值为576，Internet的UDP编程时数据长度最好在576－20－8＝548字节以内，和KCP的MTU是两码事，KCP的MTU是他允许的最大单包数据，
+            //包含他定义的消息头等和我们自己的有效数据。
+            //设置消息发送异步对象的发送数据缓冲区数据，连续发送的时候会出问题，因为该SAEA已经有个异步操作还在执行，方案每次发送使用不同的SAEA，或者直接用同步发送,
+            //是在用KCP发送大于设置的KCP的MTU小于SAEA接收的buffer大小的情况下，发现的这个UDP错误提示。
+            //SendSAEA.SetBuffer(data, 0, size);
             //开启异步发送
-            bool result = conn.SendToAsync(SendSAEA);
+            //bool result = conn.SendToAsync(SendSAEA);
+            ////是否挂起
+            //if (!result) {
+            //    SendProcess(SendSAEA);
+            //}
+            //应该用SAEA池子去操作，后续跟多个对象的管理一起更新
+            SocketAsyncEventArgs saea = new SocketAsyncEventArgs();
+            saea.RemoteEndPoint = SendSAEA.RemoteEndPoint;
+            saea.SetBuffer(data, 0, size);
+            Console.WriteLine("发送时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
+            bool result = conn.SendToAsync(saea);
             //是否挂起
             if (!result) {
-                SendProcess(SendSAEA);
+                SendProcess(saea);
             }
+            //conn.SendTo(data, size, SocketFlags.None, SendSAEA.RemoteEndPoint);
         }
         
         /// <summary>主线程驱动 </summary>

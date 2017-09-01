@@ -10,7 +10,7 @@ namespace NetFrame
     public class KcpServer {
         Socket server;//服务器socket监听对象
         private SocketAsyncEventArgs receiveSocketArgs;//接收用socket异步事件
-        private Socket sendSocket;//用于发送的socket
+        private Socket sendSocket;//用于发送的socket，阿里云winserver只能用一个socket收发UDP，不然客户端是收不到数据的
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
         UserTokenPool pool;
@@ -55,8 +55,8 @@ namespace NetFrame
             receiveSocketArgs.SetBuffer(new byte[1024], 0, 1024);
             #region KCP测试用
             kcpToken = pool.Pop();
-            //kcpToken.init_kcp(1);kcpToken.Run();
-            //TokenManager.TokenDic.Add(1, kcpToken);
+            kcpToken.init_kcp(1);kcpToken.Run();
+            TokenManager.TokenDic.Add(1, kcpToken);
             #endregion
             //监听当前服务器网卡所有可用IP地址的port端口
             //外网IP 内网IP192.168.x.x 本机IP一个127.0.0.1
@@ -86,26 +86,27 @@ namespace NetFrame
                     ProcessSend(e);
                 }
             } catch (Exception E) {
-                Console.WriteLine("IO_Completed {0} error, message: {1}", e.ConnectSocket.LocalEndPoint, E.Message);
+                Console.WriteLine("IO_Completed {0} error, message: {1}", E.Message);
             }
         }
         public void ProcessReceive(SocketAsyncEventArgs e) {
-            UserToken token = kcpToken; token.conn = sendSocket; token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
-            //判断网络消息接收是否成功
-            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success) {
+            UserToken token = kcpToken; token.conn = server; token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
+                //判断网络消息接收是否成功
+                if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success) {
+                Console.WriteLine("接收到时间 "+DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
                 byte[] message = new byte[e.BytesTransferred];
-                Buffer.BlockCopy(e.Buffer, 0, message, 0, e.BytesTransferred);
-                //处理接收到的消息
-                token.KcpReceive(message);
-                StartReceive();
-            } else {
-                if (e.SocketError != SocketError.Success) {
-                    ClientClose(token, e.SocketError.ToString());
+                    Buffer.BlockCopy(e.Buffer, 0, message, 0, e.BytesTransferred);
+                    //处理接收到的消息
+                    token.KcpReceive(message);
+                    StartReceive();
                 } else {
-                    //消息长度为0就认为客户端主动断开连接
-                    ClientClose(token, "客户端主动断开连接");
+                    if (e.SocketError != SocketError.Success) {
+                        ClientClose(token, e.SocketError.ToString());
+                    } else {
+                        //消息长度为0就认为客户端主动断开连接
+                        ClientClose(token, "客户端主动断开连接");
+                    }
                 }
-            }
         }
         public void ProcessSend(SocketAsyncEventArgs e) {
             UserToken token = e.UserToken as UserToken;
@@ -123,12 +124,12 @@ namespace NetFrame
         /// <param name="error">断开连接的错误编码</param>
         public void ClientClose(UserToken token, string error) {
             if (token.conn != null) {
-                //防止关闭释放的时候，出现多线程的访问，也是避免同一个userToken同时有多个线程操作
+                //关闭事件暂不处理，token和用户会话的关系还未设计好
                 lock (token) {
                     //通知应用层面，客户端断开连接了
                     Center.ClientClose(token, error);
-                    token.Close();
-                    pool.Push(token);
+                    //token.Close();
+                    //pool.Push(token);
                 }
             }
         }

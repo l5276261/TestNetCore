@@ -13,13 +13,13 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     }
 
     private Socket socket;
-    private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";
+    private string ip = "116.62.233.121";//"192.168.2.3";//"127.0.0.1";//"116.62.233.121";
     private int port = 6666;
     private bool isRun = false;
     private bool isConnect = false;
     private EndPoint server;
     private EndPoint receiveServer;
-    private byte[] readBuff = new byte[1024];
+    private byte[] readBuff = new byte[1024*2];
     private Action<byte[]> evHandler;
     private KCP mKcp;
     private bool mNeedUpdateFlag;
@@ -36,7 +36,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         receiveServer = new IPEndPoint(IPAddress.Parse(ip), port);
         //直接初始化一个conv的KCP，实际应该是由服务端分配。
         //init_kcp((UInt32)new System.Random((int)DateTime.Now.Ticks).Next(1, Int32.MaxValue));
-        //init_kcp(1);
+        init_kcp(1);isConnect = true;
         try {
             //开启异步数据接收
             socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
@@ -45,7 +45,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
             Debug.Log(e.Message);
         }
         //连接服务端
-        ConnectServer();
+        //ConnectServer();
     }
 
     void init_kcp(UInt32 conv) {
@@ -53,11 +53,14 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         //快速模式
         mKcp.NoDelay(1, 10, 2, 1);
         mKcp.WndSize(128, 128);
+        //Internet上的标准MTU值为576，所以Internet的UDP编程时数据长度最好在576－20－8＝548字节以内
+        mKcp.SetMtu(548);
+        mKcp.FastSet();
     }
     /// <summary>异步接收回调 </summary>
     private void ReceiveCallBack(IAsyncResult iar) {
         if (!isRun) return;
-        Debug.Log("ReceiveCallBack ");
+        //Debug.Log("接收到时间 "+ DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         try {
             //获取当前收到的消息长度
             int length = socket.EndReceiveFrom(iar, ref receiveServer);
@@ -72,21 +75,23 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
                     mRecvQueue.Push(message);
             }
             //尾递归 再次开启异步消息接收 消息到达后会直接写入 缓冲区 readbuff
-            socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
+            socket.BeginReceiveFrom(readBuff, 0, readBuff.Length, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
         } catch (Exception e) {
             Debug.Log("远程服务器主动断开连接 " + e.Message);
             Close();
         }
     }
     /// <summary>连接服务端，并获取服务端分配的KCP的conv编号 </summary>
-    private void ConnectServer() {
-        UdpSend(SerializeUtil.UintToBytes(0), 4);
+    public void ConnectServer() {
+        if (!isConnect)
+            UdpSend(SerializeUtil.UintToBytes(0), 4);
     }
     /// <summary>
     /// 用于在KCP对接收到并处理后的完整数据包的基本的反序列化，不包含消息体的反序列化，
     /// 消息体反序列化由使用者自己决定如何反序列化
     /// </summary>
     public void AfterKCPDecode(byte[] data) {
+        Debug.Log("解析数据时间 "+DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
         List<byte> cache = new List<byte>();
         cache.AddRange(data);
          //长度解码
@@ -115,8 +120,14 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     }
     /// <summary>KCP对象里面填充要发送的数据 </summary>
     public void Send(byte[] buf) {
+        //可以在此通过WaitSnd的数量合理性判断是否发送该数据，不过服务端是要通知给客户端的，不能丢包，这个判断对于客户端是否合理丢包的判断是可以的。
+        //ikcp_send 前，先检查 ikcp_waitsnd，如果 waitsnd 大于某个阈值比如 64，则认为当前网络太差，然后不调用 ikcp_send，
+        //丢弃这个数据(或者上层消息队列继续缓存这个数据，从王者的表现来看是直接丢弃的)。同时启动一个计时器，如果 waitsnd 持续 10s 都大于 64，
+        //则认为网络奇差无比，根本无法游戏，销毁 kcpcb，断线处理。如果 10s 内 waitsnd 一旦小于 32，则认为网络恢复正常，取消掉前面的计时器。
+        //Debug.Log(mKcp.WaitSnd());
         mKcp.Send(buf);
         mNeedUpdateFlag = true;
+        Debug.Log("放进消息队列时间 "+DateTime.Now.Minute+" "+DateTime.Now.Second+" "+DateTime.Now.Millisecond);
     }
 
     public void Send(string str) {
@@ -126,7 +137,9 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
     private void UdpSend(byte[] data, int size) {
         try {
             if (data == null) return;
-            Debug.Log("udpsend");
+            //Debug.Log("udpsend ");
+            //if (mKcp != null) Debug.Log(mKcp.WaitSnd());
+            //Debug.Log("发送消息时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
             socket.SendTo(data, 0, size, SocketFlags.None, server);
             #region 异步发送
             //IAsyncResult send = socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, server, new AsyncCallback(SendCallBack), server);
@@ -156,7 +169,11 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         if (!isRun) return;
         isRun = false;
         isConnect = false;
-        socket.Shutdown(SocketShutdown.Both);
+        try {
+            socket.Shutdown(SocketShutdown.Both);
+        } catch (Exception e) {
+            Debug.Log(e.Message);
+        }
         socket.Close();
     }
 

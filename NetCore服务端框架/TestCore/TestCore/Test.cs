@@ -4,6 +4,8 @@ using NetFrame.auto;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using TestCore.LOLServer;
@@ -39,6 +41,16 @@ namespace TestCore{
             data = Methods.PBDes<PBData>(b);
             Console.WriteLine("经PB序列化后反序列化的PBData数据 " + data.Name + " " + data.Age + " " + data.IsBoy + " " + 
                 data.Data.Name + " " + data.Data.Age + " " + data.Data.IsBoy);
+            int i = 1;
+            Console.WriteLine("原始的基本类型int " + i);
+            b = Methods.PBSer(i);
+            i = Methods.PBDes<int>(b);
+            Console.WriteLine("经PB序列化后反序列化的基本类型int " + i);
+            string str = "aaa";
+            Console.WriteLine("原始的基本类型string " + str);
+            b = Methods.PBSer(str);
+            str = Methods.PBDes<string>(b);
+            Console.WriteLine("经PB序列化后反序列化的基本类型string " + str);
         }
         public static void JSON() {
             List<string> lstr = new List<string>() { "a" };
@@ -59,6 +71,47 @@ namespace TestCore{
             data = Methods.JsonDes<PBData>(s);
             Console.WriteLine("经JSON序列化后反序列化的PBData数据 " + data.Name + " " + data.Age + " " + data.IsBoy + " " +
     data.Data.Name + " " + data.Data.Age + " " + data.Data.IsBoy);
+            int i = 1;
+            s = Methods.JsonSer(i);
+            Console.WriteLine("经JSON序列化后的基本类型int " + s);
+            i = Methods.JsonDes<int>(s);
+            Console.WriteLine("经JSON序列化后反序列化的基本类型int "+i);
+            string str = "aaa";
+            s = Methods.JsonSer(str);
+            Console.WriteLine("经JSON序列化后的基本类型string " + s);
+            str = Methods.JsonDes<string>(s);
+            Console.WriteLine("经JSON序列化后反序列化的基本类型string " + str);
+        }
+        public static void PB_JSON_BytesLength() {
+            List<string> lstr = new List<string>() { "a" };
+            byte[] b = Methods.PBSer(lstr);
+            Console.WriteLine("经PB序列化后的List<string>数据的字节数组长度 " + b.Length);
+            b = SerializeUtil.JsonEncode(lstr);
+            Console.WriteLine("经JSON序列化后的List<string>数据的字节数组长度 " + b.Length);
+            PBData data = new PBData() {
+                Name = "a", Age = 20, IsBoy = true, Data = new PBData() {
+                    Name = "b", Age = 30, IsBoy = false,
+                }
+            };
+            b = Methods.PBSer(data);
+            Console.WriteLine("经PB序列化后反序列化的PBData数据的字节数组长度 " + b.Length);
+            b = SerializeUtil.JsonEncode(data);
+            Console.WriteLine("经JSON序列化后的PBData数据的字节数组长度 " + b.Length);
+            int i = 9;
+            b = Methods.PBSer(i);
+            Console.WriteLine("经PB序列化后反序列化的基本类型int " + i + "的字节数组长度 " + b.Length);
+            b = SerializeUtil.JsonEncode(i);
+            Console.WriteLine("经JSON序列化后反序列化的基本类型int " + i + "的字节数组长度 " + b.Length);
+            string str = "aaa";
+            b = Methods.PBSer(str);
+            Console.WriteLine("经PB序列化后反序列化的基本类型string " + str + "的字节数组长度 " + b.Length);
+            b = SerializeUtil.JsonEncode(str);
+            Console.WriteLine("经JSON序列化后反序列化的基本类型string " + str + "的字节数组长度 " + b.Length);
+            bool isTrue = true;
+            b = Methods.PBSer(isTrue);
+            Console.WriteLine("经PB序列化后反序列化的基本类型int " + isTrue + "的字节数组长度 " + b.Length);
+            b = SerializeUtil.JsonEncode(isTrue);
+            Console.WriteLine("经JSON序列化后反序列化的基本类型int " + isTrue + "的字节数组长度 " + b.Length);
         }
         public static void Path() {
             string path = AppDomain.CurrentDomain.BaseDirectory;
@@ -89,6 +142,14 @@ namespace TestCore{
             }
             num = LengthEncoding.DecodeInt(b,0);
             Console.WriteLine("通过二进制把byte数组再转换成int " + num + " 对应的二进制为 " + Convert.ToString(num, 2));
+        }
+        public static void LittleThing() {
+            byte[] b = Encoding.UTF8.GetBytes("\r\n\r\n");
+            string s = "";
+            for (int j = 0; j < b.Length; j++) {
+                s += j;
+            }
+            Console.WriteLine(s);
         }
         public static void Mysql() {
             //Methods.MysqlFind();
@@ -141,9 +202,9 @@ namespace TestCore{
                 while (true) {
                     if (TokenManager.TokenDic.ContainsKey(1))
                         TokenManager.TokenDic[1].Update();
-                    Thread.Sleep(5);
+                    //Thread.Sleep(1);
                 }
-            });
+            }) { IsBackground = true };
             t.Start();
             while (true) {
 

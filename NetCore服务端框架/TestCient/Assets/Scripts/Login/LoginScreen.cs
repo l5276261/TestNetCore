@@ -10,21 +10,17 @@ public class LoginScreen : MonoBehaviour {
     #region 登陆面板部分
     [SerializeField]
     private InputField accountInput;
-
     [SerializeField]
     private InputField passwordInput;
     #endregion
     #region 注册面板部分
     [SerializeField]
     private InputField regAccountInput;
-
     [SerializeField]
     private InputField regpwInput;
-
     [SerializeField]
     private InputField regpw1Input;
     #endregion
-
     [SerializeField]
     private Button loginBtn;
     [SerializeField]
@@ -43,6 +39,7 @@ public class LoginScreen : MonoBehaviour {
 		
 	}
     public void LoginOnClick() {
+        KCPSocket.I.ConnectServer();
         if (accountInput.text.Length == 0 || accountInput.text.Length > 6) {
             //WarrningManager.errors.Add(new WarrningModel("账号不合法"));
             Debug.Log("账号不合法");
@@ -56,9 +53,14 @@ public class LoginScreen : MonoBehaviour {
         AccountInfoDTO dto = new AccountInfoDTO();
         dto.account = accountInput.text;
         dto.password = passwordInput.text;
-        this.WriteMessage(Protocol.TYPE_LOGIN, 0, LoginProtocol.LOGIN_CREQ, SerializeUtil.SerEncode(dto));
-        //this.WriteMessage(Protocol.TYPE_LOGIN, 3, 5, 9);
-        //loginBtn.interactable = false;
+        //this.WriteMessage(Protocol.TYPE_LOGIN, 0, LoginProtocol.LOGIN_CREQ, SerializeUtil.SerEncode(dto));
+        List<AccountInfoDTO> accounts = new List<AccountInfoDTO>();
+        for (int i = 0; i < 1; i++) {
+            accounts.Add(dto);
+        }
+        for (int i = 0; i < 1; i++) {
+            this.WriteMessage(Protocol.TYPE_LOGIN, 0, LoginProtocol.REG_CREQ, SerializeUtil.SerEncode(accounts));
+        }
     }
 
     public void RegClick() {
