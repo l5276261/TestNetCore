@@ -1,1 +1,0 @@
-C:\Users\Administrator\Desktop\protobuf-net-master\protobuf-net\obj\Debug\protobuf-net.csprojResolveAssemblyReference.cache
