@@ -1,6 +1,7 @@
 ﻿using GameProtocol.dto;
 using NetFrame;
 using NetFrame.auto;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,17 @@ using TestCore.Model;
 using TestCore.Tool;
 
 namespace TestCore{
+    [ProtoContract]
+    public class TestPB {
+        [ProtoMember(1)]
+        public byte A;
+        [ProtoMember(2)]
+        public int B;
+        [ProtoMember(3)]
+        public int C;
+        [ProtoMember(4)]
+        public string D;
+    }
     [Serializable]
     public struct SS {
         public int Age;
@@ -150,6 +162,22 @@ namespace TestCore{
                 s += j;
             }
             Console.WriteLine(s);
+        }
+        public static void Normal_JSON_PB_Bytes() {
+            TestPB t = new TestPB() { A = 1, B = 1000, C = 10000, D = "jajdfaijfikafjaksjfskf" };
+            byte[]b = SerializeUtil.StringToBytes(t.D);
+            Console.WriteLine("普通长度 " + (b.Length + 4 + 1 + 4 + 4));//string本身转换bytes的长度，加长度标记，还有其他byte，int，int的长度
+            b = SerializeUtil.JsonEncode(t);
+            Console.WriteLine("JSON后长度 " + (b.Length+4));
+            b = SerializeUtil.PBSer(t);
+            Console.WriteLine("PB后长度 " + (b.Length + 4));
+        }
+        public static void HandlerDic() {
+            //HandlerCenter h = new HandlerCenter();
+            //var l = h.handlerDic[1];
+            //var l1 = l.Clone();
+            //l.Set("我是前任");l.Do();
+            //l1.Set("我是现任");l1.Do();l.Do();
         }
         public static void Mysql() {
             //Methods.MysqlFind();

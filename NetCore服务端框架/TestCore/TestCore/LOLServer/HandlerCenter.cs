@@ -1,4 +1,5 @@
 ﻿using GameProtocol;
+using Microsoft.Extensions.Configuration;
 using NetFrame;
 using NetFrame.auto;
 using System;
@@ -6,15 +7,24 @@ using System.Collections.Generic;
 using System.Text;
 using TestCore.LOLServer.Logic;
 using TestCore.LOLServer.Logic.Login;
+using TestCore.Tool;
 
 namespace TestCore.LOLServer
 {
 
     public class HandlerCenter : AbsHandlerCenter {
-        HandlerInterface login;
+        IConfigurationRoot appConfig;
+        IConfigurationRoot protocolConfig;
+        Dictionary<int, string> handlerNameDic;
+        Dictionary<int, IHandler> handlerDic;
+        IHandler login;
 
         public HandlerCenter() {
             login = new LoginHandler();
+            appConfig = Methods.GetConfig("appsettings.json");
+            protocolConfig = Methods.GetConfig("protocol.json");
+            handlerNameDic = Methods.ConfigToDic(protocolConfig);
+            handlerDic = Methods.GetIHandlerDic(appConfig["protocolPath"], handlerNameDic);
         }
         public override void ClientClose(UserToken token, string error) {
             Console.WriteLine("有客户端断开连接了");
@@ -25,27 +35,8 @@ namespace TestCore.LOLServer
         }
 
         public override void MessageReceive(UserToken token, object message) {
-            SocketModel model = message as SocketModel;
-            switch (model.Type) {
-                case Protocol.TYPE_LOGIN:
-                    login.MessageReceive(token, model);
-                    break;
-                case Protocol.TYPE_USER:
-                    //user.MessageReceive(token, model);
-                    break;
-                case Protocol.TYPE_MATCH:
-                    //match.MessageReceive(token, model);
-                    break;
-                case Protocol.TYPE_SELECT:
-                    //select.MessageReceive(token, model);
-                    break;
-                case Protocol.TYPE_FIGHT:
-                    //fight.MessageReceive(token, model);
-                    break;
-                default:
-                    //未知模块  可能是客户端作弊了 无视
-                    break;
-            }
+            MessageModel model = message as MessageModel;
+            handlerDic[model.ID].Clone().MessageReceive(token, message as MessageModel);
         }
     }
 }

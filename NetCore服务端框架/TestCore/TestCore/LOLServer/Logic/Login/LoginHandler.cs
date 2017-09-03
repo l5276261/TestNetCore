@@ -10,7 +10,8 @@ using TestCore.LOLServer.Tool;
 
 namespace TestCore.LOLServer.Logic.Login
 {
-    public class LoginHandler : AbsOnceHandler, HandlerInterface {
+    public class LoginHandler : AbsOnceHandler, IHandler {
+        string str;
         IAccountBiz accountBiz = BizFactory.accountBiz;
         public void ClientClose(UserToken token, string error) {
             ExecutorPool.Instance.execute(
@@ -20,7 +21,7 @@ namespace TestCore.LOLServer.Logic.Login
          );
         }
 
-        public void MessageReceive(UserToken token, SocketModel message) {
+        public void MessageReceive(UserToken token, MessageModel message) {
             List<AccountInfoDTO> accounts = SerializeUtil.DesDecode<List<AccountInfoDTO>>(message.Message as byte[]);
             string str = "";
             for (int i = 0; i < accounts.Count; i++) {
@@ -28,7 +29,7 @@ namespace TestCore.LOLServer.Logic.Login
             }
             Console.WriteLine(str);
             //Console.WriteLine("信息输出完成");
-            write(token, LoginProtocol.LOGIN_SRES, SerializeUtil.SerEncode(accounts));
+            write(token, LoginProtocol.LOGIN_CREQ, SerializeUtil.SerEncode(accounts));
             //message.Message = SerializeUtil.DesDecode<AccountInfoDTO>(message.Message as byte[]);
             //switch (message.Command) {
             //    case LoginProtocol.LOGIN_CREQ:
@@ -58,6 +59,19 @@ namespace TestCore.LOLServer.Logic.Login
 
         public override byte GetType() {
             return Protocol.TYPE_LOGIN;
+        }
+
+        public void Set(object value) {
+            str = (string)value;
+            Console.WriteLine("得到消息 ");
+        }
+
+        public void Do() {
+            Console.WriteLine("得到的消息是 " + str);
+        }
+
+        public IHandler Clone() {
+            return new LoginHandler();
         }
     }
 }

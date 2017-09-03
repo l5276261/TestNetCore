@@ -121,8 +121,8 @@ namespace TestCore.LOLServer.Logic
 
 
 
-        public SocketModel CreateSocketModel(byte type, int area, int command, object message) {
-            return new SocketModel(type, area, command, message);
+        public MessageModel CreateSocketModel(byte type, int area, int command, object message) {
+            return new MessageModel(type, message);
         }
     }
 }

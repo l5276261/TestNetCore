@@ -12,16 +12,14 @@ namespace NetFrame.auto
         /// <param name="value"></param>
         /// <returns></returns>
         public static byte[] Encode(object value) {
-            SocketModel model = value as SocketModel;
+            MessageModel model = value as MessageModel;
             byte[] m = model.Message == null ? null : model.Message as byte[];
-            //SocketModel变量Type是byte占位一个字节，Area和Command是int都占位4个字节
-            int basel = 1 + 4 + 4;
+            //byte占位一个字节，int占位4个字节
+            int basel = 4;
             int l = basel + (m == null ? 0 : m.Length);
             byte[] r = new byte[l];
-            EncodeByte(r, 0, model.Type);
-            EncodeInt(r, 1, model.Area);
-            EncodeInt(r, 5, model.Command);
-            Buffer.BlockCopy(m, 0, r, 9, m.Length);
+            EncodeInt(r, 0, model.ID);
+            Buffer.BlockCopy(m, 0, r, basel, m.Length);
             return r;
             #region 性能不好放弃
             //SocketModel model = value as SocketModel;
@@ -44,13 +42,11 @@ namespace NetFrame.auto
         /// <param name="value"></param>
         /// <returns></returns>
         public static object Decode(byte[] value) {
-            SocketModel model = new SocketModel();
-            model.Type = DecodeByte(value, 0);
-            model.Area = DecodeInt(value, 1);
-            model.Command = DecodeInt(value, 5);
-            if (value.Length > 9) {
-                byte[] message = new byte[value.Length - 9];
-                Buffer.BlockCopy(value, 9, message, 0, message.Length);
+            MessageModel model = new MessageModel();
+            model.ID = DecodeInt(value, 0);
+            if (value.Length > 4) {
+                byte[] message = new byte[value.Length - 4];
+                Buffer.BlockCopy(value, 4, message, 0, message.Length);
                 model.Message = message;
             }
             return model;
