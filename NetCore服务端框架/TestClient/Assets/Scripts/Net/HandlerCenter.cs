@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NetMessageUtil :InstanceMono<NetMessageUtil> {
+public class HandlerCenter : InstanceMono<HandlerCenter> {
     Dictionary<int, string> nameDic;
     Dictionary<int, IHandler> handlerDic;
     private GameObject CanvasGO;
@@ -15,12 +15,11 @@ public class NetMessageUtil :InstanceMono<NetMessageUtil> {
     void Awake() {
         nameDic = Methods.LoadProtocol("protocol");
         handlerDic = Methods.GetIHandlerDic(nameDic);
-        Ex.Type = NetType.KCP;
-        this.Initial();
+        Ex.Type = NetType.TCP;
     }
     void Start() {
         CanvasGO = GameObject.Find("Canvas");
-        login = CanvasGO.GetComponent<LoginHandler>();
+        login = new LoginHandler();
         //user = GetComponent<UserHandler>();
         //match = GetComponent<MatchHandler>();
         //select = GetComponent<SelectHandler>();
@@ -30,7 +29,7 @@ public class NetMessageUtil :InstanceMono<NetMessageUtil> {
 
     void Update() {
         if (Ex.Type == NetType.KCP)
-            KCPSocket.I.Update();
+            KcpClient.I.Update();
         while(this.Messages().Count > 0) {
             MessageModel model = this.Messages()[0];
             StartCoroutine("MessageReceive", model);

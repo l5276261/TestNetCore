@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class KCPSocket : InstanceNormal<KCPSocket> {
+public class KcpClient : InstanceNormal<KcpClient> {
     private static readonly DateTime utc_time = new DateTime(1970, 1, 1);
 
     public static UInt32 iclock() {
@@ -28,7 +28,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
 
     private SwitchQueue<byte[]> mRecvQueue = new SwitchQueue<byte[]>(128);
 
-    public KCPSocket() {
+    public KcpClient() {
         evHandler = AfterKCPDecode;
         SerializeUtil.IsPBOrJson = false;
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -36,7 +36,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
         receiveServer = new IPEndPoint(IPAddress.Parse(ip), port);
         //直接初始化一个conv的KCP，实际应该是由服务端分配。
         //init_kcp((UInt32)new System.Random((int)DateTime.Now.Ticks).Next(1, Int32.MaxValue));
-        init_kcp(1);isConnect = true;
+        //init_kcp(1);isConnect = true;
         try {
             //开启异步数据接收
             socket.BeginReceiveFrom(readBuff, 0, 1024, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
@@ -45,7 +45,7 @@ public class KCPSocket : InstanceNormal<KCPSocket> {
             Debug.Log(e.Message);
         }
         //连接服务端
-        //ConnectServer();
+        ConnectServer();
     }
 
     void init_kcp(UInt32 conv) {

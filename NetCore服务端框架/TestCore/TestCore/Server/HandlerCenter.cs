@@ -7,6 +7,7 @@ using System.Text;
 using TestCore.Server.Logic;
 using TestCore.Server.Logic.Login;
 using TestCore.Tool;
+using System.Net.Sockets;
 
 namespace TestCore.Server
 {
@@ -36,6 +37,10 @@ namespace TestCore.Server
         public override void MessageReceive(UserToken token, object message) {
             MessageModel model = message as MessageModel;
             handlerDic[model.ID].Clone().MessageReceive(token, message as MessageModel);
+        }
+
+        public override void UDPClientClose(SocketAsyncEventArgs e, string error) {
+            Console.WriteLine("有客户端断开连接了");
         }
     }
 }

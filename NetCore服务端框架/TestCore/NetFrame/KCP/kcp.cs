@@ -913,8 +913,13 @@ public class KCP
     {
         return snd_buf.Length + snd_queue.Length;
     }
+    #region 自己加的方法
     public void FastSet() {
         rx_minrto = 10;
         fastresend = 1;
     }
+    public UInt32 GetConv() {
+        return conv;
+    }
+    #endregion
 }

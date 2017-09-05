@@ -188,7 +188,7 @@ namespace TestCore{
         }
         public static void NetFrameStart() {
             //服务器初始化
-            ServerStart ss = new ServerStart(9000);
+            TcpServer ss = new TcpServer(9000);
             ss.Encode = MessageEncoding.Encode;
             ss.Decode = MessageEncoding.Decode;
             ss.Center = new HandlerCenter();
@@ -232,8 +232,8 @@ namespace TestCore{
             Console.WriteLine("KCP服务器启动成功");
             Thread t = new Thread(delegate () {
                 while (true) {
-                    if (TokenManager.TokenDic.ContainsKey(1))
-                        TokenManager.TokenDic[1].Update();
+                    if (TokenManager.Kcp_TokenDic.ContainsKey(1))
+                        TokenManager.Kcp_TokenDic[1].Update();
                     //Thread.Sleep(1);
                 }
             }) { IsBackground = true };

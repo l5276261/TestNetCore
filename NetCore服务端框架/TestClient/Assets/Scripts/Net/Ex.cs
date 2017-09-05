@@ -17,49 +17,49 @@ public static class Ex {
     public static void WriteMessage(this MonoBehaviour mono, int id, object message) {
         switch (Type) {
             case NetType.TCP:
-                NetIO.I.Write(id, message);
+                TcpClient.I.Write(id, message);
                 break;
             case NetType.UDP:
-                Udp.I.Write(id, message);
+                UdpClient.I.Write(id, message);
                 break;
             case NetType.KCP:
-                KCPSocket.I.Write(id, message);
+                KcpClient.I.Write(id, message);
                 break;
         }
     }
     public static void Close(this MonoBehaviour mono) {
         switch (Type) {
             case NetType.TCP:
-                NetIO.I.Close();
+                TcpClient.I.Close();
                 break;
             case NetType.UDP:
-                Udp.I.Close();
+                UdpClient.I.Close();
                 break;
             case NetType.KCP:
-                KCPSocket.I.Close();
+                KcpClient.I.Close();
                 break;
         }
     }
     public static void Initial(this MonoBehaviour mono) {
         switch (Type) {
             case NetType.TCP:
-                NetIO.I.ConnectServer();
+                TcpClient.I.ConnectServer();
                 break;
             case NetType.UDP:
-                    Udp.I.Initial();
+                UdpClient.I.Initial();
                     break;
             case NetType.KCP:
-                KCPSocket.I.Initial();
+                KcpClient.I.Initial();
                 break;
         }
     }
     public static List<MessageModel> Messages(this MonoBehaviour mono) {
         if (Type == NetType.TCP) {
-            return NetIO.I.messages;
+            return TcpClient.I.messages;
         } else if (Type == NetType.UDP) {
-            return Udp.I.messages;
+            return UdpClient.I.messages;
         } else if (Type == NetType.KCP) {
-            return KCPSocket.I.messages;
+            return KcpClient.I.messages;
         }
         return null;
     }

@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class Udp :InstanceNormal<Udp> {
+public class UdpClient :InstanceNormal<UdpClient> {
     private Socket socket;
     private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";//"116.62.233.121";
     private int port = 6666;
@@ -16,7 +16,7 @@ public class Udp :InstanceNormal<Udp> {
     List<byte> cache = new List<byte>();
     public List<MessageModel> messages = new List<MessageModel>();
     private bool isReading = false;
-    public Udp() {
+    public UdpClient() {
         SerializeUtil.IsPBOrJson = false;
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         server = new IPEndPoint(IPAddress.Parse(ip), port);

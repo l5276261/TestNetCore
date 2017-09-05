@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 
 namespace NetFrame
@@ -18,10 +19,16 @@ namespace NetFrame
         /// <param name="message">消息内容</param>
         public abstract void MessageReceive(UserToken token,object message);
         /// <summary>
-        /// 客户端断开连接
+        /// 客户端断开连接，TCP的收发信息，UDP的发信息
         /// </summary>
         /// <param name="token">断开的客户端对象</param>
         /// <param name="error">断开的错误信息</param>
         public abstract void ClientClose(UserToken token,string error);
+        /// <summary>
+        /// UDP专用，客户端通信网络异常，UDP的收信息
+        /// </summary>
+        /// <param name="token">断开的客户端对象</param>
+        /// <param name="error">断开的错误信息</param>
+        public abstract void UDPClientClose(SocketAsyncEventArgs e, string error);
     }
 }

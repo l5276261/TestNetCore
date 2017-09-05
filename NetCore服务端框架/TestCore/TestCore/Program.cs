@@ -7,7 +7,7 @@ namespace TestCore
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Test.Interlocked_Compare();
+            Test.NetFrameStart();
         }
     }
 }

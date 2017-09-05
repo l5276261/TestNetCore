@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoginHandler : MonoBehaviour, IHandler {
+public class LoginHandler : IHandler {
     string str;
     public void MessageReceive(MessageModel model) {
         List<AccountInfoDTO> l = SerializeUtil.DesDecode<List<AccountInfoDTO>>(model.Message as byte[]);

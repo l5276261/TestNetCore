@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NetFrame;
-using TestCore.Server.Dao.Model;
+using TestCore.Server.Model;
 using TestCore.Server.Cache;
 
 namespace TestCore.Server.Biz.Impl

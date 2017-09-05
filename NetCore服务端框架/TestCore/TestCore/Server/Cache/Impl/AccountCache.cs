@@ -42,8 +42,9 @@ namespace TestCore.Server.Cache.Impl
         }
 
         public void online(UserToken token, string account) {
-            //添加映射
-            onlineAccMap.Add(token, account);
+            if (!onlineAccMap.ContainsKey(token))
+                //添加映射
+                onlineAccMap.Add(token, account);
         }
 
         public void offline(UserToken token) {

@@ -11,7 +11,6 @@
           "Microsoft.Extensions.Configuration": "2.0.0",
           "Microsoft.Extensions.Configuration.Json": "2.0.0",
           "NetFrame": "1.0.0",
-          "Protocol": "1.0.0",
           "protobuf-net": "2.0.0.668"
         },
         "runtime": {
@@ -517,11 +516,6 @@
           "NetFrame.dll": {}
         }
       },
-      "Protocol/1.0.0": {
-        "runtime": {
-          "Protocol.dll": {}
-        }
-      },
       "protobuf-net/2.0.0.668": {
         "runtime": {
           "protobuf-net.dll": {}
@@ -907,11 +901,6 @@
       "hashPath": "system.xml.xmldocument.4.3.0.nupkg.sha512"
     },
     "NetFrame/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Protocol/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

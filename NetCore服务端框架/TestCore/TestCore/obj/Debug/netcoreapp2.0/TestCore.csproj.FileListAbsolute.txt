@@ -34,9 +34,7 @@ D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\TestCore.pdb
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\NetFrame.dll
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\protobuf-net.dll
-D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\Protocol.dll
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\NetFrame.pdb
-D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\Protocol.pdb
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\obj\Debug\netcoreapp2.0\TestCore.csprojResolveAssemblyReference.cache
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\obj\Debug\netcoreapp2.0\TestCore.csproj.CoreCompileInputs.cache
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\obj\Debug\netcoreapp2.0\TestCore.AssemblyInfoInputs.cache

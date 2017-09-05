@@ -20,7 +20,7 @@ namespace NetFrame
         public BodyEncode Encode;
         public BodyDecode Decode;
         public static NetType Type;
-
+        public string ID;
         public delegate void SendProcessDelegate(SocketAsyncEventArgs e);
         public SendProcessDelegate SendProcess;
         public delegate void CloseProcessDelegate(UserToken token, string error);
@@ -32,12 +32,17 @@ namespace NetFrame
         Queue<byte[]> WriteQueue = new Queue<byte[]>();
         private bool isWriting = false;
         public UserToken() {
+            CreateNewID();
             ReceiveSAEA = new SocketAsyncEventArgs();
             ReceiveSAEA.UserToken = this;
             SendSAEA = new SocketAsyncEventArgs();
             SendSAEA.UserToken = this;
             //设置接收对象的缓冲区大小
             ReceiveSAEA.SetBuffer(new byte[1024], 0, 1024);
+        }
+        /// <summary>重新生成ID </summary>
+        public void CreateNewID() {
+            ID = NetTool.GenerateGuidID();
         }
         /// <summary>网络消息到达 </summary>
         public void Receive(byte[] buff) {
@@ -129,24 +134,85 @@ namespace NetFrame
                 cache.Clear();
                 isReading = false;
                 isWriting = false;
-                if (Type==NetType.TCP) {
-                    conn.Shutdown(SocketShutdown.Both);
-                    conn.Close();
-                }
+                conn.Shutdown(SocketShutdown.Both);
+                conn.Close();
                 conn = null;
+                UserToken token = null;
+                TokenManager.Tcp_TokenDic.TryRemove(this.ID, out token);
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }
         }
         #region UDP专用
-        /// <summary>检查发送队列里面有没有数据，方便外部调用判断时候继续写数据还是归还token给池子，
-        /// 暂时测试用，还没有做UDP的token维持。
-        /// </summary>
-        public bool CheckWriteQueue() {
-            return WriteQueue.Count > 0;
+        public UdpServer UDPServer;
+        /// <summary>网络消息到达 </summary>
+        public void UdpReceive(byte[] buff) {
+            //将消息写入缓存
+            cache.AddRange(buff);
+            if (!isReading) {
+                isReading = true;
+                UdpOnData();
+            }
+        }
+        /// <summary>缓存中有数据处理 </summary>
+        public void UdpOnData() {
+            //解码消息存储对象
+            byte[] buff = null;
+            //当粘包解码器存在的时候，进行粘包处理
+            if (LD != null) {
+                buff = LD(ref cache);
+                //消息未接收全，退出数据处理，等待下次消息到达
+                if (buff == null) {
+                    isReading = false; return;
+                }
+            } else {
+                //缓存区中没有数据，直接退出消息处理，等待下次消息到达，防止尾递归造成的没有数据还解析的错误
+                if (cache.Count == 0) {
+                    isReading = false; return;
+                }
+                buff = cache.ToArray();
+                cache.Clear();
+            }
+            //TODO 解析消息得到tokenID然后把数据放到制定的Token去执行，没有Token就取出Token然后放入执行。
+            //测试，假设得到了tokenID
+            string id = "adafd";
+            UserToken token = null;
+            if (!TokenManager.Udp_TokenDic.ContainsKey(id)) {
+                if (UDPServer.pool.TryPop(out token)) {
+                    token.ID = id; token.conn = this.conn; token.SendSAEA = this.SendSAEA;token.SendSAEA.UserToken = token;
+                    TokenManager.Udp_TokenDic.TryAdd(id, token);
+                }
+            } else token = TokenManager.Udp_TokenDic[id];
+
+
+            //反序列化方法是否存在
+            if (Decode == null) {
+                throw new Exception("message decode process is null");
+            }
+            //进行消息反序列化
+            object message = Decode(buff);
+            //通知应用层有消息到达
+            Center.MessageReceive(token, message);
+            //尾递归，防止在消息处理过程中，有其他消息到达而没有经过处理
+            OnData();
+        }
+        public void UdpClose() {
+            try {
+                WriteQueue.Clear();
+                cache.Clear();
+                isReading = false;
+                isWriting = false;
+                conn = null;
+
+                UserToken token = null;
+                TokenManager.Udp_TokenDic.TryRemove(this.ID, out token);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
         }
         #endregion
         #region KCP专用
+        public KcpServer KCPServer;
         private static readonly DateTime utc_time = new DateTime(1970, 1, 1);
 
         public static UInt32 iclock() {
@@ -178,13 +244,20 @@ namespace NetFrame
             UInt32 conv = LengthEncoding.DecodeUInt(buff,0);
             //0代表是第一次连接服务端，还没有分配KCP
             if (conv == 0) {
-                //开启KCP
-                init_kcp(1); Run();
-                TokenManager.TokenDic.Add(1, this);
+
+                UserToken token = null;
+                if (KCPServer.pool.TryPop(out token)) {
+                    token.conn = this.conn; token.SendSAEA = this.SendSAEA; token.SendSAEA.UserToken = token;
+                    //开启KCP
+                    token.init_kcp(1);token.Run();
+                    TokenManager.Kcp_TokenDic.TryAdd(1, token);
+                }
                 //通知客户端KCP的conv编号
-                UdpSend(SerializeUtil.UintToBytes(1),4);
-            } else
-                mRecvQueue.Push(buff);
+                UdpSend(SerializeUtil.UintToBytes(1), 4);
+
+            } else {
+                TokenManager.Kcp_TokenDic[conv].mRecvQueue.Push(buff);
+            }
             //测试调用位置更改，貌似没区别，不用强制接收和发送在一个方法执行。
             //process_recv_queue();
         }
@@ -291,6 +364,20 @@ namespace NetFrame
                 kcp.Update(current);
                 mNextUpdateTime = kcp.Check(current);
                 mNeedUpdateFlag = false;
+            }
+        }
+        public void KcpClose() {
+            try {
+                WriteQueue.Clear();
+                cache.Clear();
+                isReading = false;
+                isWriting = false;
+                conn = null;
+
+                UserToken token = null;
+                TokenManager.Kcp_TokenDic.TryRemove(this.kcp.GetConv(), out token);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
             }
         }
         #endregion

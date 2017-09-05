@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace NetFrame
 {
-    public class ServerStart
+    public class TcpServer
     {
         Socket server;//服务器socket监听对象
         int maxClient;//最大客户端连接数
@@ -20,7 +20,7 @@ namespace NetFrame
         public AbsHandlerCenter Center;
 
         /// <summary>初始化通信监听，port：监听端口 </summary>
-        public ServerStart(int max) {
+        public TcpServer(int max) {
             //IPEndPoint ip = new IPEndPoint(IPAddress.Any, port);
             //实例化监听对象
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -82,6 +82,7 @@ namespace NetFrame
                 Console.WriteLine("没有足够的token");return;
             }
             token.conn = e.AcceptSocket;
+            TokenManager.Tcp_TokenDic.TryAdd(token.ID, token);
             //通知应用层有客户端连接
             Center.ClientConnect(token);
             //开启消息到达监听

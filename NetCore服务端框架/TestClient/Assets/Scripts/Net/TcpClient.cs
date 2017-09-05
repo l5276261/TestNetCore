@@ -6,16 +6,16 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class NetIO : InstanceNormal<NetIO> {
+public class TcpClient : InstanceNormal<TcpClient> {
     private Socket socket;
-    private string ip = "116.62.233.121";//"192.168.2.3";//"127.0.0.1";//"192.168.2.146";//"116.62.233.121";
+    private string ip = "127.0.0.1";//"192.168.2.3";//"127.0.0.1";//"192.168.2.146";//"116.62.233.121";
     private int port = 6666;
     private bool isConnect = false;
     private byte[] readBuff = new byte[1024];
     List<byte> cache = new List<byte>();
     public List<MessageModel> messages = new List<MessageModel>();
     private bool isReading = false;
-    public NetIO() {
+    public TcpClient() {
         SerializeUtil.IsPBOrJson = false;
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }

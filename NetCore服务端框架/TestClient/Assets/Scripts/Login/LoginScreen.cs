@@ -24,7 +24,7 @@ public class LoginScreen : MonoBehaviour {
     [SerializeField]
     private Button regBtn;
     void Awake() {
-        NetMessageUtil.I.Initial();
+        HandlerCenter.I.Initial();
     }
     // Use this for initialization
     void Start () {
@@ -37,7 +37,6 @@ public class LoginScreen : MonoBehaviour {
 		
 	}
     public void LoginOnClick() {
-        KCPSocket.I.ConnectServer();
         if (accountInput.text.Length == 0 || accountInput.text.Length > 6) {
             //WarrningManager.errors.Add(new WarrningModel("账号不合法"));
             Debug.Log("账号不合法");
