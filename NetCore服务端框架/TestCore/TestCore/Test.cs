@@ -1,5 +1,4 @@
-﻿using GameProtocol.dto;
-using NetFrame;
+﻿using NetFrame;
 using NetFrame.auto;
 using ProtoBuf;
 using System;
@@ -9,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using TestCore.LOLServer;
+using TestCore.Server;
 using TestCore.Model;
 using TestCore.Tool;
 
@@ -178,6 +177,11 @@ namespace TestCore{
             //var l1 = l.Clone();
             //l.Set("我是前任");l.Do();
             //l1.Set("我是现任");l1.Do();l.Do();
+        }
+        public static void Interlocked_Compare() {
+            int i = 0;
+            bool res = Methods.Interlocked_Compare(ref i);
+            Console.WriteLine(res);
         }
         public static void Mysql() {
             //Methods.MysqlFind();

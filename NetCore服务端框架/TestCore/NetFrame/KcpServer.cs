@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -13,7 +14,7 @@ namespace NetFrame
         private Socket sendSocket;//用于发送的socket，阿里云winserver只能用一个socket收发UDP，不然客户端是收不到数据的
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
-        UserTokenPool pool;
+        ConcurrentStack<UserToken> pool;
         public LengthEncode LE;
         public LengthDecode LD;
         public BodyEncode Encode;
@@ -32,7 +33,7 @@ namespace NetFrame
         /// <summary>开启服务端 </summary>
         public void Start(int port) {
             //创建连接池
-            pool = new UserTokenPool(maxClient);
+            pool = new ConcurrentStack<UserToken>();
             //连接信号量
             acceptClients = new Semaphore(maxClient, maxClient);
             for (int i = 0; i < maxClient; i++) {
@@ -54,7 +55,9 @@ namespace NetFrame
             receiveSocketArgs.RemoteEndPoint = new IPEndPoint(IPAddress.Any, port);
             receiveSocketArgs.SetBuffer(new byte[1024], 0, 1024);
             #region KCP测试用
-            kcpToken = pool.Pop();
+            if (!pool.TryPop(out kcpToken)) {
+                Console.WriteLine("没有足够的token"); return;
+            }
             kcpToken.init_kcp(1);kcpToken.Run();
             TokenManager.TokenDic.Add(1, kcpToken);
             #endregion

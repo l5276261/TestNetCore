@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -14,7 +15,7 @@ namespace NetFrame
         private Socket sendSocket;//用于发送的socket，阿里云winserver只能用一个socket收发UDP，不然客户端是收不到数据的
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
-        UserTokenPool pool;
+        ConcurrentStack<UserToken> pool;
         public LengthEncode LE;
         public LengthDecode LD;
         public BodyEncode Encode;
@@ -32,7 +33,7 @@ namespace NetFrame
         /// <summary>开启服务端 </summary>
         public void Start(int port) {
             //创建连接池
-            pool = new UserTokenPool(maxClient);
+            pool = new ConcurrentStack<UserToken>();
             //连接信号量
             acceptClients = new Semaphore(maxClient, maxClient);
             for (int i = 0; i < maxClient; i++) {
@@ -85,7 +86,11 @@ namespace NetFrame
             }
         }
         public void ProcessReceive(SocketAsyncEventArgs e) {
-            UserToken token = pool.Pop();token.conn = server;token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
+            UserToken token;
+            if (!pool.TryPop(out token)) {
+                Console.WriteLine("没有足够的token");return;
+            }
+            token.conn = server;token.SendSAEA.RemoteEndPoint = e.RemoteEndPoint;
             //判断网络消息接收是否成功
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success) {
                 Console.WriteLine("接收到时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);

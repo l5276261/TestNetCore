@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using System.Reflection;
-using TestCore.LOLServer.Logic.Login;
-using TestCore.LOLServer.Logic;
+using TestCore.Server.Logic.Login;
+using TestCore.Server.Logic;
+using System.Threading;
 //using MySql.Data.MySqlClient;
 
 namespace TestCore.Tool {
@@ -145,6 +146,20 @@ namespace TestCore.Tool {
                 d[key] = Methods.Assembly_CreateInstance(path, nameDic[key]);
             }
             return d;
+        }
+        public static bool Interlocked_Compare(ref int i) {
+            int initial, computed = 0;bool res;
+            do {
+                initial = i;
+                if (initial > 0) {
+                    computed = initial - 1;
+                    res = true;
+                } else {
+                    res = false;break;
+                }
+            } while (initial != Interlocked.CompareExchange(
+      ref i, computed, initial));
+            return res;
         }
         #region 测试Mysql，目前的正式版不支持core2.0，只有预览版
         //public static void MysqlFind() {

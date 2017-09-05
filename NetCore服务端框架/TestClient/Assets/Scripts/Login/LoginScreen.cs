@@ -1,6 +1,4 @@
-﻿using GameProtocol;
-using GameProtocol.dto;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,7 +57,7 @@ public class LoginScreen : MonoBehaviour {
             accounts.Add(dto);
         }
         for (int i = 0; i < 1; i++) {
-            this.WriteMessage(Protocol.TYPE_LOGIN,SerializeUtil.SerEncode(accounts));
+            this.WriteMessage(0,SerializeUtil.SerEncode(accounts));
         }
     }
 
@@ -80,7 +78,7 @@ public class LoginScreen : MonoBehaviour {
         AccountInfoDTO dto = new AccountInfoDTO();
         dto.account = regAccountInput.text;
         dto.password = regpwInput.text;
-        this.WriteMessage(Protocol.TYPE_LOGIN, SerializeUtil.SerEncode(dto));
+        this.WriteMessage(0, SerializeUtil.SerEncode(dto));
     }
     /// <summary>游戏退出时候关闭socket </summary>
     private void OnApplicationQuit() {

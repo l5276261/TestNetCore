@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace NetFrame
         Socket server;//服务器socket监听对象
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
-        UserTokenPool pool;
+        ConcurrentStack<UserToken> pool;
         public LengthEncode LE;
         public LengthDecode LD;
         public BodyEncode Encode;
@@ -29,7 +30,7 @@ namespace NetFrame
         /// <summary>开启服务端 </summary>
         public void Start(int port) {
             //创建连接池
-            pool = new UserTokenPool(maxClient);
+            pool = new ConcurrentStack<UserToken>();
             //连接信号量
             acceptClients = new Semaphore(maxClient, maxClient);
             for (int i = 0; i < maxClient; i++) {
@@ -76,7 +77,10 @@ namespace NetFrame
         }
         public void ProcessAccept(SocketAsyncEventArgs e) {
             //从连接对象池取出连接对象，供新用户使用
-            UserToken token = pool.Pop();
+            UserToken token;
+            if (!pool.TryPop(out token)) {
+                Console.WriteLine("没有足够的token");return;
+            }
             token.conn = e.AcceptSocket;
             //通知应用层有客户端连接
             Center.ClientConnect(token);
