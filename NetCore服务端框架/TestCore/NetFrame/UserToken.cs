@@ -137,8 +137,8 @@ namespace NetFrame
                 conn.Shutdown(SocketShutdown.Both);
                 conn.Close();
                 conn = null;
-                UserToken token = null;
-                TokenManager.Tcp_TokenDic.TryRemove(this.ID, out token);
+                //UserToken token = null;
+                //TokenManager.Tcp_TokenDic.TryRemove(this.ID, out token);
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }
@@ -241,25 +241,30 @@ namespace NetFrame
         /// <summary>网络消息到达 </summary>
         public void KcpReceive(byte[] buff) {
             //KCP分发：读取KCP消息头确定conv这个连接ID，好分配相同conv的KCP对象去处理这个消息
-            UInt32 conv = LengthEncoding.DecodeUInt(buff,0);
+            UInt32 conv = LengthEncoding.DecodeUInt32(buff,0);
             //0代表是第一次连接服务端，还没有分配KCP
             if (conv == 0) {
 
                 UserToken token = null;
                 if (KCPServer.pool.TryPop(out token)) {
                     token.conn = this.conn; token.SendSAEA = this.SendSAEA; token.SendSAEA.UserToken = token;
-                    //开启KCP
-                    token.init_kcp(1);token.Run();
-                    TokenManager.Kcp_TokenDic.TryAdd(1, token);
+                    //初始化KCP，这里开启就是动态开启，改为在TOKEN初始化的时候进行初始化。
+                    //token.init_kcp(1);
+                    //运行KCP
+                    token.Run();
+                    if (TokenManager.Kcp_TokenDic.TryAdd(token.kcp.GetConv(), token)) {
+                        //TokenManager.Kcp_TokenList.Add(token);
+                    }
                 }
                 //通知客户端KCP的conv编号
-                UdpSend(SerializeUtil.UintToBytes(1), 4);
+                UdpSend(SerializeUtil.UintToBytes(token.kcp.GetConv()), 4);
 
             } else {
                 TokenManager.Kcp_TokenDic[conv].mRecvQueue.Push(buff);
+                //测试调用位置更改，不用强制接收和发送在一个方法执行。
+                //放到这里比较好，可以让正常情况下收发信息的时间差在10毫秒左右，强制接收和发送在一个方法执行会导致时间差在15毫秒左右并且一般不低于10。
+                TokenManager.Kcp_TokenDic[conv].process_recv_queue();
             }
-            //测试调用位置更改，貌似没区别，不用强制接收和发送在一个方法执行。
-            //process_recv_queue();
         }
         /// <summary>
         /// 用于在KCP对接收到并处理后的完整数据包的基本的反序列化，不包含消息体的反序列化，
@@ -313,15 +318,12 @@ namespace NetFrame
             //if (!result) {
             //    SendProcess(SendSAEA);
             //}
-            //应该用SAEA池子去操作，后续跟多个对象的管理一起更新
-            SocketAsyncEventArgs saea = new SocketAsyncEventArgs();
-            saea.RemoteEndPoint = SendSAEA.RemoteEndPoint;
-            saea.SetBuffer(data, 0, size);
+            SendSAEA.SetBuffer(data, 0, size);
             Console.WriteLine("发送时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
-            bool result = conn.SendToAsync(saea);
+            bool result = conn.SendToAsync(SendSAEA);
             //是否挂起
             if (!result) {
-                SendProcess(saea);
+                SendProcess(SendSAEA);
             }
             //conn.SendTo(data, size, SocketFlags.None, SendSAEA.RemoteEndPoint);
         }
@@ -332,7 +334,7 @@ namespace NetFrame
                 update(iclock());
             }
         }
-        void process_recv_queue() {
+        public void process_recv_queue() {
             mRecvQueue.Switch();
 
             while (!mRecvQueue.Empty()) {
@@ -358,7 +360,7 @@ namespace NetFrame
         }
         /// <summary>更新中检查时钟然后决定发送与否，先执行接收数据的处理 </summary>
         void update(UInt32 current) {
-            process_recv_queue();
+            //process_recv_queue();
 
             if (mNeedUpdateFlag || current >= mNextUpdateTime) {
                 kcp.Update(current);
@@ -375,7 +377,10 @@ namespace NetFrame
                 conn = null;
 
                 UserToken token = null;
-                TokenManager.Kcp_TokenDic.TryRemove(this.kcp.GetConv(), out token);
+                if (TokenManager.Kcp_TokenDic.TryRemove(this.kcp.GetConv(), out token)) {
+                    //int index = TokenManager.Kcp_TokenList.FindIndex(m => m.kcp.GetConv() == token.kcp.GetConv());
+                    //if (index != -1) TokenManager.Kcp_TokenList.RemoveAt(index);
+                }
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }

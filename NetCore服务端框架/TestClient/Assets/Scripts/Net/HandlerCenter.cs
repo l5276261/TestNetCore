@@ -15,7 +15,7 @@ public class HandlerCenter : InstanceMono<HandlerCenter> {
     void Awake() {
         nameDic = Methods.LoadProtocol("protocol");
         handlerDic = Methods.GetIHandlerDic(nameDic);
-        Ex.Type = NetType.TCP;
+        Ex.Type = NetType.KCP;
     }
     void Start() {
         CanvasGO = GameObject.Find("Canvas");

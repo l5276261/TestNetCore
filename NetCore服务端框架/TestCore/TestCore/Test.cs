@@ -11,6 +11,7 @@ using System.Threading;
 using TestCore.Server;
 using TestCore.Model;
 using TestCore.Tool;
+using System.Threading.Tasks;
 
 namespace TestCore{
     [ProtoContract]
@@ -204,7 +205,7 @@ namespace TestCore{
         }
         public static void NetFrameUdpStart() {
             //服务器初始化
-            UdpServer ss = new UdpServer(3);
+            UdpServer ss = new UdpServer(10000);
             ss.Encode = MessageEncoding.Encode;
             ss.Decode = MessageEncoding.Decode;
             ss.Center = new HandlerCenter();
@@ -220,7 +221,7 @@ namespace TestCore{
         }
         public static void NetFrameKcpStart() {
             //服务器初始化
-            KcpServer ss = new KcpServer(3);
+            KcpServer ss = new KcpServer(10000);
             ss.Encode = MessageEncoding.Encode;
             ss.Decode = MessageEncoding.Decode;
             ss.Center = new HandlerCenter();
@@ -230,14 +231,33 @@ namespace TestCore{
             SerializeUtil.IsPBOrJson = false;
             UserToken.Type = NetType.KCP;
             Console.WriteLine("KCP服务器启动成功");
-            Thread t = new Thread(delegate () {
+            #region Thread开启线程
+            //Thread t = new Thread(delegate () {
+            //    while (true) {
+            //        foreach (var key in TokenManager.Kcp_TokenDic.Keys) {
+            //            TokenManager.Kcp_TokenDic[key].Update();
+            //        }
+            //        //这个时间不用太小，设置的KCP的时间间隔是10毫秒。
+            //        Thread.Sleep(5);
+            //    }
+            //}) { IsBackground = true };
+            //t.Start();
+            #endregion
+            //Task开启线程，默认是后台线程
+            Task.Run(delegate () {
                 while (true) {
-                    if (TokenManager.Kcp_TokenDic.ContainsKey(1))
-                        TokenManager.Kcp_TokenDic[1].Update();
-                    //Thread.Sleep(1);
+                    foreach (var key in TokenManager.Kcp_TokenDic.Keys) {
+                        TokenManager.Kcp_TokenDic[key].Update();
+                    }
+                    //for (int i =0; i < TokenManager.Kcp_TokenList.Count; i++) {
+                    //    //由于list不是线程安全集合，会出现添加后立刻访问为空的时候
+                    //    if (TokenManager.Kcp_TokenList[i] != null)
+                    //        TokenManager.Kcp_TokenList[i].Update();
+                    //}
+                    //这个时间不用太小，设置的KCP的时间间隔是10毫秒。
+                    Thread.Sleep(5);
                 }
-            }) { IsBackground = true };
-            t.Start();
+            });
             while (true) {
 
             }

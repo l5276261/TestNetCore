@@ -34,6 +34,23 @@ public class BaseEncode {
         //方法二
         return BitConverter.ToInt32(b, offset);
     }
+    /// <summary>uint16编码成字节数组的指定的2位元素 </summary>
+    public static void EncodeUInt16(byte[] b, int offset, UInt16 i) {
+        b[0 + offset] = (byte)i;
+        b[1 + offset] = (byte)(i >> 8);
+    }
+    /// <summary>字节数组的指定的2位元素解码成uint16 </summary>
+    public static UInt16 DecodeUInt16(byte[] b, int offset) {
+        //不知道后面两个方法哪个好
+        #region 方法一
+        //int i = 0;
+        //i |= (int)b[0 + offset];
+        //i |= (int)(b[1 + offset] << 8);
+        //return i;
+        #endregion
+        //方法二
+        return BitConverter.ToUInt16(b, offset);
+    }
     /// <summary>uint32编码成字节数组的指定的4位元素 </summary>
     public static void EncodeUInt(byte[] b, int offset, UInt32 i) {
         b[0 + offset] = (byte)i;

@@ -14,7 +14,7 @@ namespace NetFrame.auto
         public static byte[] Encode(object value) {
             MessageModel model = value as MessageModel;
             byte[] m = model.Message == null ? null : model.Message as byte[];
-            //byte占位一个字节，int占位4个字节
+            //byte占位一个字节，int占位4个字节，uint16占位2个字节
             int basel = 4;
             int l = basel + (m == null ? 0 : m.Length);
             byte[] r = new byte[l];

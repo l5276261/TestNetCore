@@ -39,7 +39,7 @@ namespace NetFrame
             acceptClients = new Semaphore(maxClient, maxClient);
             for (int i = 0; i < maxClient; i++) {
                 UserToken token = new UserToken();
-                //初始化token信息
+                //初始化token信息，可以一开始初始化一定量放入池子，也可以在需要取用的时候进行初始化放入池子。
                 token.ReceiveSAEA = null;
                 token.SendSAEA.Completed += new EventHandler<SocketAsyncEventArgs>(IOCompleted);
                 token.LD = LD;
@@ -49,19 +49,14 @@ namespace NetFrame
                 token.SendProcess = ProcessSend;
                 token.CloseProcess = SendClientClose;
                 token.Center = Center;
+                //初始化KCP对象
+                token.init_kcp((UInt32)(i + 1));
                 pool.Push(token);
             }
             receiveSocketArgs = new SocketAsyncEventArgs();
             receiveSocketArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IOCompleted);
             receiveSocketArgs.RemoteEndPoint = new IPEndPoint(IPAddress.Any, port);
             receiveSocketArgs.SetBuffer(new byte[1024], 0, 1024);
-            #region KCP测试用
-            //if (!pool.TryPop(out kcpToken)) {
-            //    Console.WriteLine("没有足够的token"); return;
-            //}
-            //kcpToken.init_kcp(1);kcpToken.Run();
-            //TokenManager.Kcp_TokenDic.TryAdd(1, kcpToken);
-            #endregion
             //监听当前服务器网卡所有可用IP地址的port端口
             //外网IP 内网IP192.168.x.x 本机IP一个127.0.0.1
             try {
@@ -145,6 +140,7 @@ namespace NetFrame
             if (token.conn != null) {
                 //关闭事件暂不处理，token和用户会话的关系还未设计好
                 lock (token) {
+                    Console.WriteLine("Close");
                     //通知应用层面，客户端断开连接了
                     Center.ClientClose(token, error);
                     token.Close();

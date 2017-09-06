@@ -68,11 +68,15 @@ public class KcpClient : InstanceNormal<KcpClient> {
                 byte[] message = new byte[length];
                 Buffer.BlockCopy(readBuff, 0, message, 0, length);
                 if (!isConnect) {
-                    UInt32 conv = SerializeUtil.BytesToUint(message,0);
-                    init_kcp(conv);isConnect = true;
-                } else
+                    UInt32 conv = SerializeUtil.BytesToUint(message, 0);
+                    init_kcp(conv); isConnect = true;
+                } else {
                     // push udp packet to switch queue.
                     mRecvQueue.Push(message);
+                    //测试调用位置更改，不用强制接收和发送在一个方法执行。
+                    //放到这里比较好，可以让正常情况下收发信息的时间差在10毫秒左右，强制接收和发送在一个方法执行会导致时间差在15毫秒左右并且一般不低于10。
+                    process_recv_queue();
+                }
             }
             //尾递归 再次开启异步消息接收 消息到达后会直接写入 缓冲区 readbuff
             socket.BeginReceiveFrom(readBuff, 0, readBuff.Length, SocketFlags.None, ref receiveServer, new AsyncCallback(ReceiveCallBack), receiveServer);
@@ -203,7 +207,7 @@ public class KcpClient : InstanceNormal<KcpClient> {
     /// <summary>更新中检查时钟然后决定发送与否，先执行接收数据的处理 </summary>
     void update(UInt32 current) {
         if (!isConnect) return;
-        process_recv_queue();
+        //process_recv_queue();
 
         if (mNeedUpdateFlag || current >= mNextUpdateTime) {
             mKcp.Update(current);

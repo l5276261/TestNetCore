@@ -118,6 +118,7 @@ public class TcpClient : InstanceNormal<TcpClient> {
     /// <param name="message"></param>
     public byte[] Encode(int id, object message) {
         MessageModel model = new MessageModel() { ID=id, Message = message };
+        Debug.Log((LengthEncoding.Encode(MessageEncoding.Encode(model))).Length);
         #region 原本写法，感觉有问题
         //ByteArray ba = new ByteArray();
         //ba.write(type);

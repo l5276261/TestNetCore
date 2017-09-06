@@ -8,7 +8,7 @@ namespace TestCore.Server.Cache.Impl
 {
     public class AccountCache : IAccountCache {
         /// <summary>
-        /// 玩家连接对象与账号的映射绑定
+        /// 玩家连接对象与账号的映射绑定，这个信息是跟随着登录状态更新的
         /// </summary>
         Dictionary<UserToken, string> onlineAccMap = new Dictionary<UserToken, string>();
         /// <summary>

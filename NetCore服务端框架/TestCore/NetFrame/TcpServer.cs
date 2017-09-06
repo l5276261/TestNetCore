@@ -35,7 +35,7 @@ namespace NetFrame
             acceptClients = new Semaphore(maxClient, maxClient);
             for (int i = 0; i < maxClient; i++) {
                 UserToken token = new UserToken();
-                //初始化token信息
+                //初始化token信息，可以一开始初始化一定量放入池子，也可以在需要取用的时候进行初始化放入池子。
                 token.ReceiveSAEA.Completed += new EventHandler<SocketAsyncEventArgs>(IOCompleted);
                 token.SendSAEA.Completed += new EventHandler<SocketAsyncEventArgs>(IOCompleted);
                 token.LD = LD;
@@ -82,7 +82,7 @@ namespace NetFrame
                 Console.WriteLine("没有足够的token");return;
             }
             token.conn = e.AcceptSocket;
-            TokenManager.Tcp_TokenDic.TryAdd(token.ID, token);
+            //TokenManager.Tcp_TokenDic.TryAdd(token.ID, token);
             //通知应用层有客户端连接
             Center.ClientConnect(token);
             //开启消息到达监听

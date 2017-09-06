@@ -9,7 +9,7 @@ public class LengthEncoding :BaseEncode{
     public static byte[] Encode(byte[] buff) {
         byte[] result = new byte[4 + buff.Length];
         Buffer.BlockCopy(buff, 0, result, 4, buff.Length);
-        EncodeInt(result,0, buff.Length);
+        EncodeInt(result, 0, buff.Length);
         return result;
         #region 性能不好放弃
         //MemoryStream ms = new MemoryStream();//创建内存流对象
@@ -29,7 +29,7 @@ public class LengthEncoding :BaseEncode{
     public static byte[] Decode(ref List<byte> cache) {
         if (cache.Count < 4) return null;
         byte[] b = cache.ToArray();
-        int l = DecodeInt(b,0);
+        int l = DecodeInt(b, 0);
         //如果消息体长度大于缓存中数据长度，说明消息没有读取完，等待下次消息到达后再次处理
         if (l > b.Length) return null;
         //读取正确长度的数据
