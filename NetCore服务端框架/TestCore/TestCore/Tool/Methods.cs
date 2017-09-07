@@ -10,6 +10,8 @@ using System.Reflection;
 using TestCore.Server.Logic.Login;
 using TestCore.Server.Logic;
 using System.Threading;
+using System.Threading.Tasks;
+using StackExchange.Redis;
 //using MySql.Data.MySqlClient;
 
 namespace TestCore.Tool {
@@ -160,6 +162,75 @@ namespace TestCore.Tool {
             } while (initial != Interlocked.CompareExchange(
       ref i, computed, initial));
             return res;
+        }
+        public static void Interlocked_Num(ref int i) {
+                int sum = 0;
+                for (int j = 0; j < 10; j++) {
+                //用Interlocked的方法是多线程安全的，数字增加或者减少同时返回计算后结果，原子操作
+                //sum = Interlocked.Increment(ref i);
+                sum = Interlocked.Add(ref i, 1);
+                //这个不是多线程安全的，不能保证数据一致性，可能会导致返回的值不是此时此刻计算后的i，可是我用几个多线程测试未见异常
+                //sum = ++i;
+                Console.Write(" sum "+sum+" i "+i+" ");
+            }
+            Console.WriteLine("");
+        }
+        public static void ThreadNum() {
+            int minCLR, minIO, maxCLR, maxIO, avaiCLR, avaiIO;
+            ThreadPool.GetMinThreads(out minCLR, out minIO);
+            ThreadPool.GetMaxThreads(out maxCLR, out maxIO);
+            ThreadPool.GetAvailableThreads(out avaiCLR, out avaiIO);
+            Console.WriteLine(minCLR + " " + minIO + " " + maxCLR + " " + maxIO + " " + avaiCLR + " " + avaiIO);
+            //ThreadPool.SetMinThreads(4, 4);
+            //ThreadPool.SetMaxThreads(4, 4);
+            for (int i = 0; i < 4; i++) {
+                int j = i;
+                Task.Run(delegate () {
+                    ThreadPool.GetAvailableThreads(out avaiCLR, out avaiIO);
+                    Console.WriteLine(minCLR + " " + minIO + " " + maxCLR + " " + maxIO + " " + avaiCLR + " " + avaiIO);
+                    while (true) {
+                        Thread.Sleep(5000);
+                        Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                    }
+                });
+            }
+            //ThreadPool.GetMinThreads(out minCLR, out minIO);
+            //ThreadPool.GetMaxThreads(out maxCLR, out maxIO);
+            //ThreadPool.GetAvailableThreads(out avaiCLR, out avaiIO);
+            //Console.WriteLine(minCLR + " " + minIO + " " + maxCLR + " " + maxIO + " " + avaiCLR + " " + avaiIO);
+            while (true) {
+
+            }
+        }
+        public static void SetThreadNum(int workerMax,int ioMax, int workerMin=0, int ioMin=0) {
+            int defaultWorkerMin, defaultIOMin;
+            ThreadPool.GetMinThreads(out defaultWorkerMin, out defaultIOMin);
+            if (workerMin == 0) workerMin = defaultWorkerMin / 2-1;
+            if (ioMin == 0) ioMin = defaultIOMin / 2-1;
+            ThreadPool.SetMinThreads(workerMin, ioMin);
+            ThreadPool.SetMaxThreads(workerMax, ioMax);
+        }
+        //注意task开启是默认是后台线程，如果主线程不一直开启，会自动结束前者。
+        public static void TaskRun(Action a) {
+            Task.Run(delegate () {
+                a();
+            });
+            //让主线程一直运行，以保证后台线程可以一直运行
+            while (true) {
+
+            }
+        }
+        /// <summary>
+        /// StackExchange.Redis和ServiceStack.Redis都是NuGet包更新后可以直接其他平台或者机子使用类似Configuration的包。
+        /// 不过最好都改成使用拷贝的包里面的dll的形式，方便其他项目复用。不过Configuration相关比较多，暂时还是使用的NuGet的包
+        /// </summary>
+        public static void RedisConnect() {
+            //RedisClient redisCli = new RedisClient("127.0.0.1", 6379);
+            ConnectionMultiplexer connect = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+            var db = connect.GetDatabase();
+            db.StringSet("a","A");
+            var s = db.StringGet("a");
+            Console.WriteLine(s);
         }
         #region 测试Mysql，目前的正式版不支持core2.0，只有预览版
         //public static void MysqlFind() {

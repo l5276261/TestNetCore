@@ -7,7 +7,7 @@ namespace TestCore
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Test.NetFrameKcpStart();
+            Test.TaskInterlocked_Num();
         }
     }
 }

@@ -76,6 +76,7 @@ namespace NetFrame
             if (Decode == null) {
                 throw new Exception("message decode process is null");
             }
+            //TODO 改成只解析ID，根据ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
             //进行消息反序列化
             object message = Decode(buff);
             //通知应用层有消息到达
@@ -283,6 +284,7 @@ namespace NetFrame
                     return;
                 }
             }
+            //TODO 改成只解析ID，根据ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
             //Console.WriteLine("解析消息时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
             object message = Decode(result);
             if (message == null) {

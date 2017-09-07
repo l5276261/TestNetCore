@@ -11,7 +11,8 @@
           "Microsoft.Extensions.Configuration": "2.0.0",
           "Microsoft.Extensions.Configuration.Json": "2.0.0",
           "NetFrame": "1.0.0",
-          "protobuf-net": "2.0.0.668"
+          "protobuf-net": "2.0.0.668",
+          "StackExchange.Redis": "1.2.6.0"
         },
         "runtime": {
           "TestCore.dll": {}
@@ -520,6 +521,11 @@
         "runtime": {
           "protobuf-net.dll": {}
         }
+      },
+      "StackExchange.Redis/1.2.6.0": {
+        "runtime": {
+          "StackExchange.Redis.dll": {}
+        }
       }
     }
   },
@@ -906,6 +912,11 @@
       "sha512": ""
     },
     "protobuf-net/2.0.0.668": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "StackExchange.Redis/1.2.6.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

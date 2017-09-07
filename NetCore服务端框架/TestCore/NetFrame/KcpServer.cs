@@ -11,7 +11,7 @@ namespace NetFrame
     public class KcpServer {
         Socket server;//服务器socket监听对象
         private SocketAsyncEventArgs receiveSocketArgs;//接收用socket异步事件
-        private Socket sendSocket;//用于发送的socket，阿里云winserver只能用一个socket收发UDP，不然客户端是收不到数据的
+        private Socket sendSocket;//用于发送的socket，阿里云winserver（2016和2012都是，其他未测试）只能用一个socket收发UDP，不然客户端是收不到数据的
         int maxClient;//最大客户端连接数
         Semaphore acceptClients;
         public ConcurrentStack<UserToken> pool;

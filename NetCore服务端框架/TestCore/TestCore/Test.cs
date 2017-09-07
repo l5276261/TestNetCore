@@ -35,6 +35,7 @@ namespace TestCore{
         A,B,C
     }
     public static class Test{
+        public static int Num;
         public static void PB() {
             Console.WriteLine("普通数据PB测试");
             List<string> lstr = new List<string>() { "a"};
@@ -183,6 +184,35 @@ namespace TestCore{
             int i = 0;
             bool res = Methods.Interlocked_Compare(ref i);
             Console.WriteLine(res);
+        }
+        public static void TaskInterlocked_Num() {
+            for (int i = 0; i < 5; i++) {
+                Task.Run(delegate () {
+                    Interlocked_Num();
+                });
+            }
+            while (true) {
+
+            }
+        }
+        public static void Interlocked_Num() {
+            Methods.Interlocked_Num(ref Num);
+            Console.WriteLine("i " + Num);
+        }
+        public static void ThreadNum() {
+            Methods.ThreadNum();
+        }
+        public static void SetThreadNum(int workerMax, int ioMax, int wMin = 0, int iMin = 0) {
+            Methods.SetThreadNum(workerMax, ioMax, workerMin: wMin, ioMin: iMin);
+        }
+        public static void TaskRun() {
+            Methods.TaskRun(delegate () {
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                Thread.Sleep(1000);
+            });
+        }
+        public static void RedisConnect() {
+            Methods.RedisConnect();
         }
         public static void Mysql() {
             //Methods.MysqlFind();
