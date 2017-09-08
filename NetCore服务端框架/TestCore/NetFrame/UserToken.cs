@@ -20,7 +20,7 @@ namespace NetFrame
         public BodyEncode Encode;
         public BodyDecode Decode;
         public static NetType Type;
-        public string ID;
+        public int ID;
         public delegate void SendProcessDelegate(SocketAsyncEventArgs e);
         public SendProcessDelegate SendProcess;
         public delegate void CloseProcessDelegate(UserToken token, string error);
@@ -32,17 +32,12 @@ namespace NetFrame
         Queue<byte[]> WriteQueue = new Queue<byte[]>();
         private bool isWriting = false;
         public UserToken() {
-            CreateNewID();
             ReceiveSAEA = new SocketAsyncEventArgs();
             ReceiveSAEA.UserToken = this;
             SendSAEA = new SocketAsyncEventArgs();
             SendSAEA.UserToken = this;
             //设置接收对象的缓冲区大小
             ReceiveSAEA.SetBuffer(new byte[1024], 0, 1024);
-        }
-        /// <summary>重新生成ID </summary>
-        public void CreateNewID() {
-            ID = NetTool.GenerateGuidID();
         }
         /// <summary>网络消息到达 </summary>
         public void Receive(byte[] buff) {
@@ -76,7 +71,7 @@ namespace NetFrame
             if (Decode == null) {
                 throw new Exception("message decode process is null");
             }
-            //TODO 改成只解析ID，根据ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
+            //TODO 改成根据Token的ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
             //进行消息反序列化
             object message = Decode(buff);
             //通知应用层有消息到达
@@ -176,7 +171,7 @@ namespace NetFrame
             }
             //TODO 解析消息得到tokenID然后把数据放到制定的Token去执行，没有Token就取出Token然后放入执行。
             //测试，假设得到了tokenID
-            string id = "adafd";
+            int id = 100;
             UserToken token = null;
             if (!TokenManager.Udp_TokenDic.ContainsKey(id)) {
                 if (UDPServer.pool.TryPop(out token)) {
@@ -284,7 +279,7 @@ namespace NetFrame
                     return;
                 }
             }
-            //TODO 改成只解析ID，根据ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
+            //TODO 改成根据Token的ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
             //Console.WriteLine("解析消息时间 " + DateTime.Now.Minute + " " + DateTime.Now.Second + " " + DateTime.Now.Millisecond);
             object message = Decode(result);
             if (message == null) {
@@ -370,9 +365,14 @@ namespace NetFrame
                 mNeedUpdateFlag = false;
             }
         }
+        public void Stop() {
+            isRun = false; evHandler = null; mNeedUpdateFlag = false;
+        }
         public void KcpClose() {
             try {
-                WriteQueue.Clear();
+                Stop();
+                kcp.ResetData();
+                mRecvQueue.Clear();
                 cache.Clear();
                 isReading = false;
                 isWriting = false;

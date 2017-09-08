@@ -49,6 +49,7 @@ namespace NetFrame
                 token.SendProcess = ProcessSend;
                 token.CloseProcess = SendClientClose;
                 token.Center = Center;
+                token.ID = i + 1; 
                 //初始化KCP对象
                 token.init_kcp((UInt32)(i + 1));
                 pool.Push(token);

@@ -921,5 +921,13 @@ public class KCP
     public UInt32 GetConv() {
         return conv;
     }
+    public void ResetData() {
+        Segment[] snd_queue = new Segment[0];
+        Segment[] rcv_queue = new Segment[0];
+        Segment[] snd_buf = new Segment[0];
+        Segment[] rcv_buf = new Segment[0];
+
+        UInt32[] acklist = new UInt32[0];
+    }
     #endregion
 }

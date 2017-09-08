@@ -49,6 +49,7 @@ namespace NetFrame
                 token.SendProcess = ProcessSend;
                 token.CloseProcess = SendClientClose;
                 token.Center = Center;
+                token.ID = i + 1;
                 pool.Push(token);
             }
             receiveSocketArgs = new SocketAsyncEventArgs();

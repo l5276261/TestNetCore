@@ -45,6 +45,7 @@ namespace NetFrame
                 token.SendProcess = ProcessSend;
                 token.CloseProcess = ClientClose;
                 token.Center = Center;
+                token.ID = i + 1;
                 pool.Push(token);
             }
             //监听当前服务器网卡所有可用IP地址的port端口

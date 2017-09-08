@@ -35,7 +35,7 @@ namespace TestCore.Server
         }
 
         public override void MessageReceive(UserToken token, object message) {
-            //TODO 改成只解析ID，根据ID分发到具体线程的队列，然后再解析成具体的数据并执行业务。即actor模型。
+            //TODO只解析业务ID，然后分发到对应的业务对象，再由其解析成具体的数据并执行业务。
             MessageModel model = message as MessageModel;
             handlerDic[model.ID].Clone().MessageReceive(token, message as MessageModel);
         }
