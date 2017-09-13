@@ -3,28 +3,22 @@ using NetFrame;
 using NetFrame.auto;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using TestCore.Server.Logic;
-using TestCore.Server.Logic.Login;
-using TestCore.Tool;
 using System.Net.Sockets;
+using System.Text;
 
-namespace TestCore.Server
+namespace HandlerModule
 {
-
     public class HandlerCenter : AbsHandlerCenter {
         IConfigurationRoot appConfig;
         IConfigurationRoot protocolConfig;
         Dictionary<int, string> handlerNameDic;
         Dictionary<int, IHandler> handlerDic;
-        IHandler login;
 
         public HandlerCenter() {
-            login = new LoginHandler();
-            appConfig = Methods.GetConfig("appsettings.json");
-            protocolConfig = Methods.GetConfig("protocol.json");
-            handlerNameDic = Methods.ConfigToDic(protocolConfig);
-            handlerDic = Methods.GetIHandlerDic(appConfig["protocolPath"], handlerNameDic);
+            appConfig = HandlerMethods.GetConfig("appsettings.json");
+            protocolConfig = HandlerMethods.GetConfig("protocol.json");
+            handlerNameDic = HandlerMethods.ConfigToDic(protocolConfig);
+            handlerDic = HandlerMethods.GetIHandlerDic(appConfig["protocolPath"], handlerNameDic);
         }
         public override void ClientClose(UserToken token, string error) {
             Console.WriteLine("有客户端断开连接了");

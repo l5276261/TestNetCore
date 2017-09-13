@@ -28,6 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataModule\DataModule.csproj" />
+    <ProjectReference Include="..\HandlerModule\HandlerModule.csproj" />
     <ProjectReference Include="..\NetFrame\NetFrame.csproj" />
   </ItemGroup>
 

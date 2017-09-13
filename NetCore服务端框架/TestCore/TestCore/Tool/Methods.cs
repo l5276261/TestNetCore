@@ -12,6 +12,7 @@ using TestCore.Server.Logic;
 using System.Threading;
 using System.Threading.Tasks;
 using StackExchange.Redis;
+using HandlerModule;
 //using MySql.Data.MySqlClient;
 
 namespace TestCore.Tool {
@@ -145,7 +146,7 @@ namespace TestCore.Tool {
         public static Dictionary<int, IHandler> GetIHandlerDic(string path,Dictionary<int, string> nameDic) {
             Dictionary<int, IHandler> d = new Dictionary<int, IHandler>();
             foreach (var key in nameDic.Keys) {
-                d[key] = Methods.Assembly_CreateInstance(path, nameDic[key]);
+                d[key] = Assembly_CreateInstance(path, nameDic[key]);
             }
             return d;
         }

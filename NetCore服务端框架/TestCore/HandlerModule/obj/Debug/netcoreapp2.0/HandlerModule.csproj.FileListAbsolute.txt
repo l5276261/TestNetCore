@@ -1,0 +1,12 @@
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\HandlerModule.deps.json
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\HandlerModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\NetFrame.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\protobuf-net.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\NetFrame.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.csprojResolveAssemblyReference.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.csproj.CoreCompileInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.AssemblyInfoInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.AssemblyInfo.cs
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\bin\Debug\netcoreapp2.0\HandlerModule.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\HandlerModule\obj\Debug\netcoreapp2.0\HandlerModule.pdb

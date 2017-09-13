@@ -997,6 +997,31 @@
           "lib/netstandard1.3/System.Xml.XmlDocument.dll": {}
         }
       },
+      "DataModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.0",
+        "compile": {
+          "bin/placeholder/DataModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DataModule.dll": {}
+        }
+      },
+      "HandlerModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.0",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "2.0.0",
+          "Microsoft.Extensions.Configuration.Json": "2.0.0",
+          "NetFrame": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/HandlerModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/HandlerModule.dll": {}
+        }
+      },
       "NetFrame/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.0",
@@ -4026,6 +4051,16 @@
         "system.xml.xmldocument.nuspec"
       ]
     },
+    "DataModule/1.0.0": {
+      "type": "project",
+      "path": "../DataModule/DataModule.csproj",
+      "msbuildProject": "../DataModule/DataModule.csproj"
+    },
+    "HandlerModule/1.0.0": {
+      "type": "project",
+      "path": "../HandlerModule/HandlerModule.csproj",
+      "msbuildProject": "../HandlerModule/HandlerModule.csproj"
+    },
     "NetFrame/1.0.0": {
       "type": "project",
       "path": "../NetFrame/NetFrame.csproj",
@@ -4034,6 +4069,8 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
+      "DataModule >= 1.0.0",
+      "HandlerModule >= 1.0.0",
       "Microsoft.Extensions.Configuration >= 2.0.0",
       "Microsoft.Extensions.Configuration.Json >= 2.0.0",
       "Microsoft.NETCore.App >= 2.0.0",
@@ -4075,6 +4112,12 @@
           "projectReferences": {
             "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\NetFrame\\NetFrame.csproj": {
               "projectPath": "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\NetFrame\\NetFrame.csproj"
+            },
+            "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\DataModule\\DataModule.csproj": {
+              "projectPath": "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\DataModule\\DataModule.csproj"
+            },
+            "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\HandlerModule\\HandlerModule.csproj": {
+              "projectPath": "D:\\TestNetCore\\NetCore服务端框架\\TestCore\\HandlerModule\\HandlerModule.csproj"
             }
           }
         }

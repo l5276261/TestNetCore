@@ -1,0 +1,12 @@
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\DataModule.deps.json
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\DataModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\DataModule.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\Newtonsoft.Json.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\protobuf-net.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\bin\Debug\netcoreapp2.0\StackExchange.Redis.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.csprojResolveAssemblyReference.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.csproj.CoreCompileInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.AssemblyInfoInputs.cache
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.AssemblyInfo.cs
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\DataModule\obj\Debug\netcoreapp2.0\DataModule.pdb

@@ -8,6 +8,8 @@
     ".NETCoreApp,Version=v2.0": {
       "TestCore/1.0.0": {
         "dependencies": {
+          "DataModule": "1.0.0",
+          "HandlerModule": "1.0.0",
           "Microsoft.Extensions.Configuration": "2.0.0",
           "Microsoft.Extensions.Configuration.Json": "2.0.0",
           "NetFrame": "1.0.0",
@@ -512,6 +514,21 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "DataModule/1.0.0": {
+        "runtime": {
+          "DataModule.dll": {}
+        }
+      },
+      "HandlerModule/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "2.0.0",
+          "Microsoft.Extensions.Configuration.Json": "2.0.0",
+          "NetFrame": "1.0.0"
+        },
+        "runtime": {
+          "HandlerModule.dll": {}
+        }
+      },
       "NetFrame/1.0.0": {
         "runtime": {
           "NetFrame.dll": {}
@@ -905,6 +922,16 @@
       "sha512": "sha512-lJ8AxvkX7GQxpC6GFCeBj8ThYVyQczx2+f/cWHJU8tjS7YfI6Cv6bon70jVEgs2CiFbmmM8b9j1oZVx0dSI2Ww==",
       "path": "system.xml.xmldocument/4.3.0",
       "hashPath": "system.xml.xmldocument.4.3.0.nupkg.sha512"
+    },
+    "DataModule/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "HandlerModule/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "NetFrame/1.0.0": {
       "type": "project",

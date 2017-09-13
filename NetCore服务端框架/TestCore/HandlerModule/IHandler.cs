@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TestCore.Server.Logic
+namespace HandlerModule
 {
     public interface IHandler {
         void ClientClose(UserToken token, string error);

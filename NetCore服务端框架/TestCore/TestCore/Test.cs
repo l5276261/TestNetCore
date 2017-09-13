@@ -12,6 +12,8 @@ using TestCore.Server;
 using TestCore.Model;
 using TestCore.Tool;
 using System.Threading.Tasks;
+using HandlerModule;
+using DataModule.Redis;
 
 namespace TestCore{
     [ProtoContract]
@@ -36,6 +38,7 @@ namespace TestCore{
     }
     public static class Test{
         public static int Num;
+
         public static void PB() {
             Console.WriteLine("普通数据PB测试");
             List<string> lstr = new List<string>() { "a"};
@@ -213,6 +216,29 @@ namespace TestCore{
         }
         public static void RedisConnect() {
             Methods.RedisConnect();
+        }
+        public static void RedisModuleTest() {
+            //RedisTool.Set("a", "B");
+            //Console.WriteLine(RedisTool.Get("a"));
+            //测试对象存储
+            PBData data = new PBData() {
+                Name = "名字", Age = 1, IsBoy = true
+            };
+            //JSON序列化方式存储
+            //RedisTool.Set("json", data);
+            data = RedisTool.Get<PBData>("json");
+            Console.WriteLine(data.Name);
+            Console.WriteLine(RedisTool.Get("json"));
+            //PB序列化方式存储
+            RedisTool.SetPB(true);
+            //RedisTool.Set("pb", data);
+            data = RedisTool.Get<PBData>("pb");
+            Console.WriteLine(data.Name);
+            Console.WriteLine(RedisTool.Get("pb"));
+            //测试自增
+            //RedisTool.Set("index", 1);
+            long index = RedisTool.Increment("index",v:2);
+            Console.WriteLine(index);
         }
         public static void Mysql() {
             //Methods.MysqlFind();

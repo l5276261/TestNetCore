@@ -5,6 +5,7 @@ using NetFrame;
 using NetFrame.auto;
 using TestCore.Server.Biz;
 using TestCore.Server.dto;
+using HandlerModule;
 
 namespace TestCore.Server.Logic.Login
 {

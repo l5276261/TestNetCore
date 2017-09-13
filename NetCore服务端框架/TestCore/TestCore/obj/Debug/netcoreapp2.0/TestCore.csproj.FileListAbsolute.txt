@@ -58,3 +58,7 @@ D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\TestCore\obj\
 D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\TestCore\obj\Debug\netcoreapp2.0\TestCore.dll
 D:\我的文档\Visual Studio 2017\NetCore服务端框架\TestCore\TestCore\obj\Debug\netcoreapp2.0\TestCore.pdb
 D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\StackExchange.Redis.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\HandlerModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\HandlerModule.pdb
+D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\DataModule.dll
+D:\TestNetCore\NetCore服务端框架\TestCore\TestCore\bin\Debug\netcoreapp2.0\DataModule.pdb
